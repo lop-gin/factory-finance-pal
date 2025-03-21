@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { X, ChevronDown, Save } from "lucide-react";
+import { X, ChevronDown, Save, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomerSection } from "@/components/forms/CustomerSection";
 import { FormMessage } from "@/components/forms/FormMessage";
@@ -22,6 +21,12 @@ import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { PageLoader } from "@/components/ui/page-loader";
 import { AnimatePresence } from "framer-motion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const PaymentForm: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -44,7 +49,6 @@ export const PaymentForm: React.FC = () => {
     setIsCustomerSelected(!!customerName);
   };
 
-  // Simulate loading like in SalesReceiptForm
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -64,11 +68,8 @@ export const PaymentForm: React.FC = () => {
     toast.success("Payment saved successfully. New payment form ready.");
   };
 
-  // Create a document object that meets the Document interface requirements
-  // to pass to CustomerSection
   const documentForCustomer = {
     customer: payment.customer,
-    // Add required Document properties
     items: [],
     messageOnInvoice: "",
     messageOnStatement: "",
@@ -162,7 +163,6 @@ export const PaymentForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Only show outstanding invoices when a customer is selected */}
             {isCustomerSelected && (
               <div className="bg-white rounded-md shadow-sm p-4 mb-6">
                 <div className="mb-2 flex items-center justify-between">
@@ -192,7 +192,6 @@ export const PaymentForm: React.FC = () => {
               <FormMessage
                 message={payment.message}
                 onChange={(message) => {
-                  // Update the message
                   const updatedPayment = { ...payment, message };
                   savePayment();
                 }}
