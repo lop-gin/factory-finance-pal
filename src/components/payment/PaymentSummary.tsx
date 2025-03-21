@@ -15,7 +15,7 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   onClearPayment,
 }) => {
   return (
-    <Card className="mt-4 ml-auto" style={{ maxWidth: '300px' }}>
+    <Card className="mt-4" style={{ maxWidth: '300px', marginLeft: 'auto' }}>
       <CardContent className="p-4">
         <div className="space-y-4">
           <div className="flex flex-col space-y-2">

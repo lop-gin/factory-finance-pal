@@ -4,8 +4,6 @@ import { CustomerSection } from "@/components/forms/CustomerSection";
 import { DateField } from "@/components/forms/DateFields";
 import { SalesRepresentative } from "@/components/forms/SalesRepresentative";
 import { DocumentTotal } from "@/components/forms/DocumentTotal";
-import { ItemsTable } from "@/components/forms/ItemsTable";
-import { FormMessage } from "@/components/forms/FormMessage";
 import { Customer, DocumentItem, OtherFees } from "@/types/document";
 import { RefundReceiptType } from "@/hooks/useRefundReceiptForm";
 
