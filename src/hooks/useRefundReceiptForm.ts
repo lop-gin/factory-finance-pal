@@ -1,16 +1,9 @@
 
 import { useState, useCallback } from "react";
-import { Document, DocumentItem, Customer, OtherFees } from "@/types/document";
+import { Document, DocumentItem, Customer, OtherFees, RefundReceiptType } from "@/types/document";
 import { generateRefundReceiptNumber } from "@/lib/document-utils";
 import { saveRefundReceipt } from "@/services/refundReceiptService";
 import { toast } from "sonner";
-
-// Extend Document type for RefundReceipt
-export interface RefundReceiptType extends Document {
-  refundReceiptNumber: string;
-  refundReceiptDate: Date;
-  referencedTransactions?: string[]; // IDs of transactions being refunded
-}
 
 export const useRefundReceiptForm = () => {
   const initialState: RefundReceiptType = {
@@ -199,7 +192,7 @@ export const useRefundReceiptForm = () => {
     toast.success("Refund Receipt saved!");
   }, [refundReceipt, saveRefundReceiptToDatabase]);
 
-  // Apply calculated totals whenever items or fees change
+  // Return the state and functions
   return {
     refundReceipt,
     updateRefundReceipt,

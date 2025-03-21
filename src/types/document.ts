@@ -72,6 +72,7 @@ export interface CreditNoteType extends Document {
 export interface RefundReceiptType extends Document {
   refundReceiptNumber: string;
   refundReceiptDate: Date;
+  referencedTransactions?: string[];  // Added property for referenced transactions
 }
 
 // Estimate specific fields

@@ -17,3 +17,5 @@ export function transformCustomerFromDB(dbCustomer: any): Customer {
     }
   };
 }
+
+// Additional transform functions can be added here as needed

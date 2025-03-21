@@ -17,6 +17,7 @@ interface TransactionSelectionProps {
   availableTransactions: Transaction[];
   selectedTransactions: string[];
   onTransactionSelect: (transactionId: string) => void;
+  isLoading?: boolean;
 }
 
 export const TransactionSelection: React.FC<TransactionSelectionProps> = ({
@@ -24,6 +25,7 @@ export const TransactionSelection: React.FC<TransactionSelectionProps> = ({
   availableTransactions,
   selectedTransactions,
   onTransactionSelect,
+  isLoading = false,
 }) => {
   if (!customerName) {
     return null;
@@ -36,11 +38,17 @@ export const TransactionSelection: React.FC<TransactionSelectionProps> = ({
         <p className="text-xs text-gray-500">Select one or more transactions to add their items to this credit note.</p>
       </div>
       
-      <TransactionTable 
-        transactions={availableTransactions}
-        selectedTransactions={selectedTransactions}
-        onTransactionSelect={onTransactionSelect}
-      />
+      {isLoading ? (
+        <div className="text-center py-4 text-gray-500">
+          Loading transactions...
+        </div>
+      ) : (
+        <TransactionTable 
+          transactions={availableTransactions}
+          selectedTransactions={selectedTransactions}
+          onTransactionSelect={onTransactionSelect}
+        />
+      )}
     </div>
   );
 };

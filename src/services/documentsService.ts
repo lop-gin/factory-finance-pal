@@ -11,8 +11,8 @@ export async function saveDocument(document: Document, documentType: string) {
       document_type: documentType,
       document_number: getDocumentNumber(document, documentType),
       customer_id: document.customer.id,
-      issue_date: getIssueDate(document, documentType),
-      due_date: getDueDate(document, documentType),
+      issue_date: getIssueDate(document, documentType).toISOString(),
+      due_date: getDueDate(document, documentType)?.toISOString(),
       total_amount: document.total,
       balance_due: document.balanceDue,
       message_on_invoice: document.messageOnInvoice,
@@ -53,7 +53,8 @@ async function saveRefundReceiptDetails(documentId: string, refundReceipt: Refun
     .from('refund_receipts')
     .insert({
       id: documentId,
-      refund_date: refundReceipt.refundReceiptDate
+      refund_date: refundReceipt.refundReceiptDate.toISOString(),
+      refund_method: null
     });
   
   if (error) {
@@ -94,7 +95,7 @@ async function saveOtherFees(documentId: string, otherFees: OtherFees) {
     .insert({
       document_id: documentId,
       description: otherFees.description,
-      amount: otherFees.amount
+      amount: otherFees.amount || 0
     });
   
   if (error) {
