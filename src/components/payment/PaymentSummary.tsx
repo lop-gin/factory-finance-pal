@@ -14,7 +14,7 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   onClearPayment,
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-gray-50 p-4 rounded-md border border-gray-200">
       <div className="flex flex-col space-y-2">
         <div className="flex justify-between items-center">
           <span className="font-medium text-sm text-gray-700">Amount to Apply:</span>

@@ -1,4 +1,3 @@
-
 // Utility functions for document generation and calculations
 
 // Generate a random invoice number
@@ -21,6 +20,26 @@ export function generateCreditNoteNumber(): string {
     .toString()
     .padStart(3, "0")}`;
 }
+
+// Generate a unique refund receipt number
+export const generateRefundReceiptNumber = (): string => {
+  const date = new Date();
+  const year = date.getFullYear().toString().substring(2); // Get last 2 digits of year
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  
+  return `RR-${year}${month}-${random}`;
+};
+
+// Generate a unique estimate number
+export const generateEstimateNumber = (): string => {
+  const date = new Date();
+  const year = date.getFullYear().toString().substring(2); // Get last 2 digits of year
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  
+  return `EST-${year}${month}-${random}`;
+};
 
 // Calculate due date based on terms
 export function calculateDueDate(invoiceDate: Date, terms: string): Date {

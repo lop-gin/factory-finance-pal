@@ -6,27 +6,28 @@ import { SalesRepresentative } from "@/components/forms/SalesRepresentative";
 import { DocumentTotal } from "@/components/forms/DocumentTotal";
 import { ItemsTable } from "@/components/forms/ItemsTable";
 import { FormMessage } from "@/components/forms/FormMessage";
-import { Customer, CreditNoteType, DocumentItem, OtherFees } from "@/types/document";
+import { Customer, DocumentItem, OtherFees } from "@/types/document";
+import { RefundReceiptType } from "@/hooks/useRefundReceiptForm";
 
-interface CreditNoteFormProps {
-  creditNote: CreditNoteType;
-  updateCreditNote: (updates: Partial<CreditNoteType>) => void;
+interface RefundReceiptFormProps {
+  refundReceipt: RefundReceiptType;
+  updateRefundReceipt: (updates: Partial<RefundReceiptType>) => void;
   updateCustomer: (customer: Customer) => void;
-  addCreditNoteItem: () => void;
-  updateCreditNoteItem: (itemId: string, updates: Partial<DocumentItem>) => void;
-  removeCreditNoteItem: (itemId: string) => void;
+  addRefundReceiptItem: () => void;
+  updateRefundReceiptItem: (itemId: string, updates: Partial<DocumentItem>) => void;
+  removeRefundReceiptItem: (itemId: string) => void;
   clearAllItems: () => void;
   updateOtherFees: (updates: Partial<OtherFees>) => void;
   onCustomerSelect: (name: string) => void;
 }
 
-export const CreditNoteForm: React.FC<CreditNoteFormProps> = ({
-  creditNote,
-  updateCreditNote,
+export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
+  refundReceipt,
+  updateRefundReceipt,
   updateCustomer,
-  addCreditNoteItem,
-  updateCreditNoteItem,
-  removeCreditNoteItem,
+  addRefundReceiptItem,
+  updateRefundReceiptItem,
+  removeRefundReceiptItem,
   clearAllItems,
   updateOtherFees,
   onCustomerSelect,
@@ -38,24 +39,24 @@ export const CreditNoteForm: React.FC<CreditNoteFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <CustomerSection 
-                customer={creditNote.customer}
-                document={creditNote}
+                customer={refundReceipt.customer}
+                document={refundReceipt}
                 updateCustomer={updateCustomer} 
-                updateDocument={updateCreditNote}
+                updateDocument={updateRefundReceipt}
                 onCustomerSelect={onCustomerSelect}
               />
             </div>
             <div>
               <div className="space-y-3 pb-5">
                 <DateField 
-                  label="Credit note date"
-                  date={creditNote.creditNoteDate}
-                  onDateChange={(date) => updateCreditNote({ creditNoteDate: date })}
+                  label="Refund receipt date"
+                  date={refundReceipt.refundReceiptDate}
+                  onDateChange={(date) => updateRefundReceipt({ refundReceiptDate: date })}
                 />
                 
                 <SalesRepresentative 
-                  value={creditNote.salesRep || ""}
-                  onChange={(rep) => updateCreditNote({ salesRep: rep })}
+                  value={refundReceipt.salesRep || ""}
+                  onChange={(rep) => updateRefundReceipt({ salesRep: rep })}
                 />
               </div>
             </div>
@@ -63,13 +64,15 @@ export const CreditNoteForm: React.FC<CreditNoteFormProps> = ({
         </div>
         <div>
           <DocumentTotal 
-            total={creditNote.total}
-            balanceDue={creditNote.balanceDue}
-            otherFeesAmount={creditNote.otherFees?.amount}
-            documentType="creditNote"
+            total={refundReceipt.total}
+            balanceDue={refundReceipt.balanceDue}
+            otherFeesAmount={refundReceipt.otherFees?.amount}
+            documentType="refundReceipt"
           />
         </div>
       </div>
     </div>
   );
 };
+
+export default RefundReceiptForm;

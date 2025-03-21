@@ -68,6 +68,19 @@ export interface CreditNoteType extends Document {
   creditNoteDate: Date;
 }
 
+// Refund Receipt specific fields
+export interface RefundReceiptType extends Document {
+  refundReceiptNumber: string;
+  refundReceiptDate: Date;
+}
+
+// Estimate specific fields
+export interface EstimateType extends Document {
+  estimateNumber: string;
+  estimateDate: Date;
+  expirationDate: Date;
+}
+
 // Payment specific types
 export interface OutstandingInvoice {
   id: string;
