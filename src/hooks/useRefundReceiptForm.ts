@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { Document, DocumentItem, Customer, OtherFees, RefundReceiptType } from "@/types/document";
 import { generateRefundReceiptNumber } from "@/lib/document-utils";
-import { saveRefundReceipt } from "@/services/refundReceiptService";
+import { saveRefundReceipt as saveRefundReceiptToDb } from "@/services/refundReceiptService";
 import { toast } from "sonner";
 
 export const useRefundReceiptForm = () => {
@@ -170,7 +170,7 @@ export const useRefundReceiptForm = () => {
       }
       
       // Save the refund receipt to the database
-      await saveRefundReceipt(refundReceipt);
+      await saveRefundReceiptToDb(refundReceipt);
       
       // Generate a new refund receipt number for the next refund receipt
       setRefundReceipt((prev) => ({
