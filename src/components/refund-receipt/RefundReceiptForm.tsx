@@ -6,6 +6,7 @@ import { SalesRepresentative } from "@/components/forms/SalesRepresentative";
 import { DocumentTotal } from "@/components/forms/DocumentTotal";
 import { Customer, DocumentItem, OtherFees } from "@/types/document";
 import { RefundReceiptType } from "@/hooks/useRefundReceiptForm";
+import { PaymentSummary } from "@/components/payment/PaymentSummary";
 
 interface RefundReceiptFormProps {
   refundReceipt: RefundReceiptType;
@@ -17,6 +18,7 @@ interface RefundReceiptFormProps {
   clearAllItems: () => void;
   updateOtherFees: (updates: Partial<OtherFees>) => void;
   onCustomerSelect: (name: string) => void;
+  onClearRefund?: () => void;
 }
 
 export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
@@ -29,6 +31,7 @@ export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
   clearAllItems,
   updateOtherFees,
   onCustomerSelect,
+  onClearRefund
 }) => {
   return (
     <div className="p-4">
@@ -67,6 +70,16 @@ export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
             otherFeesAmount={refundReceipt.otherFees?.amount}
             documentType="refundReceipt"
           />
+          
+          {refundReceipt.total > 0 && (
+            <div className="mt-4">
+              <PaymentSummary 
+                amountToApply={refundReceipt.total}
+                amountToCredit={0}
+                onClearPayment={onClearRefund || clearAllItems}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
