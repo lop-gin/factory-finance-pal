@@ -31,6 +31,18 @@ const Index = () => {
           >
             Receive Payment
           </Link>
+          <Link 
+            to="/dashboard/sales/estimate" 
+            className="block w-full p-4 bg-yellow-50 border border-yellow-200 rounded-md hover:bg-yellow-100 transition-colors"
+          >
+            Create Estimate
+          </Link>
+          <Link 
+            to="/dashboard/sales/refund-receipt" 
+            className="block w-full p-4 bg-orange-50 border border-orange-200 rounded-md hover:bg-orange-100 transition-colors"
+          >
+            Create Refund Receipt
+          </Link>
         </div>
       </div>
     </div>

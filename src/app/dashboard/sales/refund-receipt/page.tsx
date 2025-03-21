@@ -1,19 +1,20 @@
 
 import React, { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
-import { DocumentItem } from "@/types/document";
-import { useRefundReceiptForm } from "@/hooks/useRefundReceiptForm";
-import { PageLoader } from "@/components/ui/page-loader";
+import { FormActions } from "@/components/forms/FormActions";
 import { RefundReceiptHeader } from "@/components/refund-receipt/RefundReceiptHeader";
-import { RefundReceiptForm } from "@/components/refund-receipt/RefundReceiptForm";
+import { AnimatePresence } from "framer-motion";
+import { PageLoader } from "@/components/ui/page-loader";
+import { useRefundReceiptForm } from "@/hooks/useRefundReceiptForm";
+import { toast } from "sonner";
 import { ItemsTable } from "@/components/forms/ItemsTable";
 import { FormMessage } from "@/components/forms/FormMessage";
-import { FormActions } from "@/components/forms/FormActions";
+import { CustomerSection } from "@/components/forms/CustomerSection";
+import { DateField } from "@/components/forms/DateFields";
+import { SalesRepresentative } from "@/components/forms/SalesRepresentative";
+import { DocumentTotal } from "@/components/forms/DocumentTotal";
 
 export default function RefundReceiptPage() {
   const [loading, setLoading] = useState(true);
-  const [customerName, setCustomerName] = useState<string>("");
   
   const {
     refundReceipt,
@@ -24,7 +25,7 @@ export default function RefundReceiptPage() {
     removeRefundReceiptItem,
     clearAllItems,
     saveRefundReceipt,
-    updateOtherFees,
+    updateOtherFees
   } = useRefundReceiptForm();
 
   // Simulate loading
@@ -36,26 +37,15 @@ export default function RefundReceiptPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handler for customer selection
-  const handleCustomerSelect = (name: string) => {
-    // If customer name is changing, reset everything
-    if (name !== customerName) {
-      setCustomerName(name);
-      clearAllItems();
-      
-      updateCustomer({
-        ...refundReceipt.customer,
-        name
-      });
-    }
+  const handleSave = () => {
+    saveRefundReceipt();
+    toast.success("Refund receipt saved successfully");
   };
-  
-  // Reset form handler for "Save & New"
+
   const handleSaveAndNew = () => {
     saveRefundReceipt();
     clearAllItems();
-    setCustomerName("");
-    toast.success("Refund receipt saved and new form created");
+    toast.success("Refund receipt saved successfully. New refund receipt form ready.");
   };
 
   return (
@@ -68,19 +58,44 @@ export default function RefundReceiptPage() {
         <div className="bg-transparent pb-20">
           <RefundReceiptHeader />
           
-          <RefundReceiptForm
-            refundReceipt={refundReceipt}
-            updateRefundReceipt={updateRefundReceipt}
-            updateCustomer={updateCustomer}
-            addRefundReceiptItem={addRefundReceiptItem}
-            updateRefundReceiptItem={updateRefundReceiptItem}
-            removeRefundReceiptItem={removeRefundReceiptItem}
-            clearAllItems={clearAllItems}
-            updateOtherFees={updateOtherFees}
-            onCustomerSelect={handleCustomerSelect}
-          />
-          
           <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="md:col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <CustomerSection 
+                      customer={refundReceipt.customer}
+                      document={refundReceipt}
+                      updateCustomer={updateCustomer} 
+                      updateDocument={updateRefundReceipt}
+                    />
+                  </div>
+                  <div>
+                    <div className="space-y-3 pb-5">
+                      <DateField 
+                        label="Refund receipt date"
+                        date={refundReceipt.refundReceiptDate}
+                        onDateChange={(date) => updateRefundReceipt({ refundReceiptDate: date })}
+                      />
+                      
+                      <SalesRepresentative 
+                        value={refundReceipt.salesRep || ""}
+                        onChange={(rep) => updateRefundReceipt({ salesRep: rep })}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <DocumentTotal 
+                  total={refundReceipt.total}
+                  balanceDue={refundReceipt.balanceDue}
+                  otherFeesAmount={refundReceipt.otherFees?.amount}
+                  documentType="refundReceipt"
+                />
+              </div>
+            </div>
+            
             <div className="bg-white rounded-md shadow-sm p-4 mb-6">
               <ItemsTable 
                 items={refundReceipt.items} 
@@ -96,15 +111,15 @@ export default function RefundReceiptPage() {
             <div className="mt-8">
               <FormMessage 
                 message={refundReceipt.messageOnInvoice}
-                label="MESSAGE ON REFUND RECEIPT" 
+                label="MESSAGE ON REFUND RECEIPT"
                 onChange={(message) => updateRefundReceipt({ messageOnInvoice: message })}
                 placeholder="Enter a message to be displayed on the refund receipt"
               />
             </div>
           </div>
           
-          <FormActions 
-            onSave={saveRefundReceipt}
+          <FormActions
+            onSave={handleSave}
             onClear={clearAllItems}
             onSaveAndNew={handleSaveAndNew}
             formType="refundReceipt"
