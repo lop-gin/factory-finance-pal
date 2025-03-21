@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// QuickBooks-like colors
+				qb: {
+					blue: '#2CA01C', // Primary QuickBooks green
+					'blue-dark': '#008100', // Darker green for hover/focus states
+					'blue-light': '#D4F7CD', // Light green for highlights/backgrounds
+					green: '#2CA01C', // Secondary accent color
+					gray: '#8E9196', // Neutral gray for text
+					'gray-light': '#F5F6F8', // Light gray for backgrounds
+					'gray-dark': '#393a3d', // Dark gray for text
 				}
 			},
 			borderRadius: {

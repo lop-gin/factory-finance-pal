@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 217 88% 51%; /* QuickBooks blue */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -32,22 +33,15 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.375rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -88,6 +82,23 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  html {
+    font-size: 14px; /* Reduced base font size */
+  }
+  
+  /* Remove arrows from number inputs */
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
 }
 
 @layer base {
@@ -97,5 +108,31 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .qb-input {
+    @apply h-9 px-3 py-1.5 border border-gray-300 rounded-md text-xs shadow-sm focus:outline-none focus:ring-1 focus:ring-qb-blue focus:border-qb-blue;
+  }
+  
+  .qb-input-label {
+    @apply block text-xs font-medium text-gray-700 mb-1;
+  }
+  
+  .qb-table-header {
+    @apply bg-qb-gray-light border-b border-gray-300 font-medium text-xs text-qb-gray-dark py-1.5 px-3;
+  }
+  
+  .qb-table-cell {
+    @apply px-3 py-1.5 border-b border-gray-200 text-xs;
+  }
+  
+  .qb-btn-primary {
+    @apply bg-qb-blue text-white hover:bg-qb-blue-dark rounded-md font-medium shadow-sm px-3 py-1.5 transition-colors text-xs;
+  }
+  
+  .qb-btn-secondary {
+    @apply bg-white text-qb-gray-dark border border-gray-300 hover:bg-gray-50 rounded-md font-medium shadow-sm px-3 py-1.5 transition-colors text-xs;
   }
 }
