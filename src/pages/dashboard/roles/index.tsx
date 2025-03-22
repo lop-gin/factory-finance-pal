@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Role } from '@/types/roles';
+import { Role, ModulePermission, RolePermission } from '@/types/roles';
 import { useAuth } from '@/components/auth/AuthProvider';
 
 export default function RolesPage() {
@@ -43,13 +43,28 @@ export default function RolesPage() {
         }
 
         // Transform the data to match our Role type
-        const transformedRoles = data.map(role => ({
-          id: role.id,
-          name: role.name,
-          description: role.description,
-          created_at: new Date(role.created_at), // Convert string to Date object
-          permissions: role.role_permissions
-        }));
+        const transformedRoles = data.map(role => {
+          // Transform permissions to match ModulePermission type
+          const transformedPermissions: RolePermission[] = role.role_permissions.map(
+            (permObj: { id: string; role_id: string; module_id: string; permissions: string[] }) => ({
+              id: permObj.id,
+              role_id: permObj.role_id,
+              module_id: permObj.module_id,
+              // Filter permissions to only include valid ModulePermission values
+              permissions: permObj.permissions.filter((p): p is ModulePermission => 
+                ['view', 'create', 'edit', 'delete', 'approve'].includes(p)
+              ) as ModulePermission[]
+            })
+          );
+
+          return {
+            id: role.id,
+            name: role.name,
+            description: role.description,
+            created_at: new Date(role.created_at), // Convert string to Date object
+            permissions: transformedPermissions
+          };
+        });
 
         setRoles(transformedRoles);
       } catch (error: any) {
