@@ -21,6 +21,7 @@ export default function RolesPage() {
       setLoading(true);
       
       try {
+        // Use a raw SQL query to ensure we're getting the right data
         const { data, error } = await supabase
           .from('roles')
           .select(`
@@ -28,7 +29,7 @@ export default function RolesPage() {
             name,
             description,
             created_at,
-            permissions:role_permissions(
+            role_permissions (
               id,
               role_id,
               module_id,
@@ -41,7 +42,16 @@ export default function RolesPage() {
           throw error;
         }
 
-        setRoles(data || []);
+        // Transform the data to match our Role type
+        const transformedRoles = data.map(role => ({
+          id: role.id,
+          name: role.name,
+          description: role.description,
+          created_at: role.created_at,
+          permissions: role.role_permissions
+        }));
+
+        setRoles(transformedRoles);
       } catch (error: any) {
         console.error('Error fetching roles:', error);
         toast({
