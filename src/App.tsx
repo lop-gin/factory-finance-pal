@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./components/auth/AuthProvider";
 
 // Auth pages
@@ -39,31 +39,29 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<LandingPage />} />
-        
-        {/* Auth routes with layout */}
-        <Route path="/auth/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
-        <Route path="/auth/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
-        <Route path="/auth/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
-        <Route path="/auth/reset-password" element={<AuthLayout><ResetPasswordPage /></AuthLayout>} />
-        
-        {/* Protected dashboard routes */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<DashboardPage />} />
-          {/* Add more dashboard routes here */}
-        </Route>
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<LandingPage />} />
+      
+      {/* Auth routes with layout */}
+      <Route path="/auth/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
+      <Route path="/auth/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
+      <Route path="/auth/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
+      <Route path="/auth/reset-password" element={<AuthLayout><ResetPasswordPage /></AuthLayout>} />
+      
+      {/* Protected dashboard routes */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardLayout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<DashboardPage />} />
+        {/* Add more dashboard routes here */}
+      </Route>
 
-        {/* Catch-all redirect to 404 or home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+      {/* Catch-all redirect to 404 or home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
