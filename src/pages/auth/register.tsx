@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Define our schema
 const registerSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters"),
   companyName: z.string().min(2, "Company name must be at least 2 characters"),
@@ -70,30 +71,28 @@ export default function RegisterPage() {
   };
 
   const validateStep = (currentStep: number) => {
-    if (currentStep === 1) {
-      try {
+    const fieldsToValidate = 
+      currentStep === 1 
+        ? { 
+            fullName: formData.fullName, 
+            companyName: formData.companyName, 
+            companyType: formData.companyType, 
+            email: formData.email 
+          }
+        : { 
+            password: formData.password, 
+            confirmPassword: formData.confirmPassword 
+          };
+    
+    try {
+      if (currentStep === 1) {
         z.object({
           fullName: z.string().min(3, "Full name must be at least 3 characters"),
           companyName: z.string().min(2, "Company name must be at least 2 characters"),
           companyType: z.enum(["manufacturer", "distributor", "both"]),
           email: z.string().email("Please enter a valid email"),
-        }).parse(formData);
-        setErrors({});
-        return true;
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          const newErrors: Record<string, string> = {};
-          error.errors.forEach((err) => {
-            if (err.path[0]) {
-              newErrors[err.path[0].toString()] = err.message;
-            }
-          });
-          setErrors(newErrors);
-        }
-        return false;
-      }
-    } else if (currentStep === 2) {
-      try {
+        }).parse(fieldsToValidate);
+      } else if (currentStep === 2) {
         z.object({
           password: z.string().min(6, "Password must be at least 6 characters"),
           confirmPassword: z.string().min(6, "Please confirm your password"),
@@ -102,23 +101,22 @@ export default function RegisterPage() {
             message: "Passwords do not match",
             path: ["confirmPassword"],
           })
-          .parse(formData);
-        setErrors({});
-        return true;
-      } catch (error) {
-        if (error instanceof z.ZodError) {
-          const newErrors: Record<string, string> = {};
-          error.errors.forEach((err) => {
-            if (err.path[0]) {
-              newErrors[err.path[0].toString()] = err.message;
-            }
-          });
-          setErrors(newErrors);
-        }
-        return false;
+          .parse(fieldsToValidate);
       }
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            newErrors[err.path[0].toString()] = err.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
     }
-    return true;
   };
 
   const handleNext = () => {
@@ -137,65 +135,34 @@ export default function RegisterPage() {
 
     setIsLoading(true);
     try {
-      // First, create a company
-      const { data: companyData, error: companyError } = await supabase
-        .from("companies")
-        .insert([
-          {
-            name: formData.companyName,
-            company_type: formData.companyType,
-            address: formData.address,
-            phone: formData.phone,
-          },
-        ])
-        .select()
-        .single();
-
-      if (companyError) {
-        throw companyError;
-      }
-
-      // Get the company ID
-      const companyId = companyData.id;
-
-      // Then, sign up the user
+      // Create user first using Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
             full_name: formData.fullName,
+            company_name: formData.companyName,
+            company_type: formData.companyType,
+            phone: formData.phone,
+            address: formData.address,
+            is_admin: true,
           },
         },
       });
 
       if (error) {
-        // Rollback company creation if user creation fails
-        await supabase.from("companies").delete().eq("id", companyId);
         throw error;
       }
 
-      // Update profile with company_id and set as admin
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({
-            company_id: companyId,
-            is_admin: true,
-            full_name: formData.fullName,
-          })
-          .eq("id", data.user.id);
-
-        if (profileError) {
-          throw profileError;
-        }
-      }
-
+      // Store the additional company info in a custom table later 
+      // after the user confirms their email
+      
       toast.success("Registration successful! Please check your email to verify your account.");
       navigate("/auth/login");
     } catch (error: any) {
-      toast.error(error.message || "Failed to register");
       console.error("Registration error:", error);
+      toast.error(error.message || "Failed to register");
     } finally {
       setIsLoading(false);
     }

@@ -1,236 +1,178 @@
 
-"use client";
-
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, LogOut, User, Settings } from "lucide-react";
+import { Link } from "react-router-dom";
+import { LogOut, Menu, User, ChevronDown } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { UserRoleBadge } from "@/components/ui/user-role-badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
-
-export interface UserRole {
-  id: string;
-  role: string;
-}
 
 export default function DashboardHeader() {
-  const { user, signOut } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
+  const { user, userMetadata, signOut } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Mock roles for demonstration - in production, fetch from the database
-  const [userRoles] = useState<UserRole[]>([
-    { id: "1", role: "admin" },
-    { id: "2", role: "sales_supervisor" },
-  ]);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success("Signed out successfully");
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast.error("Failed to sign out");
-    }
-  };
-
-  const navLinks = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Sales", path: "/dashboard/sales" },
-    { name: "Procurement", path: "/dashboard/procurement" },
-    { name: "Inventory", path: "/dashboard/inventory" },
-    { name: "Reports", path: "/dashboard/reports" },
-  ];
-
-  const isActive = (path: string) => {
-    if (path === "/dashboard") {
-      return location.pathname === "/dashboard";
-    }
-    return location.pathname.startsWith(path);
-  };
+  const userRoles = [];
+  if (userMetadata?.is_admin) {
+    userRoles.push('Admin');
+  }
+  
+  // More roles can be added here as the system develops
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+    <header className="bg-white shadow-sm">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex h-16 justify-between">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link to="/dashboard" className="text-xl font-bold text-blue-600">
+            <div className="flex flex-shrink-0 items-center">
+              <Link to="/dashboard" className="text-xl font-bold text-gray-900">
                 InventoryPro
               </Link>
             </div>
             <nav className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 ${
-                    isActive(link.path)
-                      ? "border-blue-500 text-gray-900"
-                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              >
+                Dashboard
+              </Link>
+              {/* More nav links will be added here */}
             </nav>
           </div>
-
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          
+          <div className="flex items-center">
+            {/* Company info */}
+            {userMetadata?.company_name && (
+              <div className="hidden sm:flex sm:items-center sm:mr-4">
+                <div className="text-sm text-gray-500">
+                  <span className="font-medium">{userMetadata.company_name}</span>
+                  <span className="ml-1">({userMetadata.company_type})</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Role badges */}
             {userRoles.length > 0 && (
-              <div className="mr-4 flex space-x-2">
+              <div className="hidden sm:flex sm:items-center sm:mr-4">
                 {userRoles.map((role) => (
-                  <UserRoleBadge key={role.id} role={role.role as any} />
+                  <span 
+                    key={role}
+                    className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 mr-1"
+                  >
+                    {role}
+                  </span>
                 ))}
               </div>
             )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative rounded-full bg-gray-100 p-1 text-gray-600 hover:text-gray-900 focus:outline-none"
-                >
-                  <span className="sr-only">Open user menu</span>
-                  <User className="h-6 w-6" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="font-normal text-xs text-gray-500">
-                    Signed in as
-                  </div>
-                  <div className="font-medium">{user?.email}</div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link
-                    to="/dashboard/profile"
-                    className="flex items-center cursor-pointer"
+            
+            {/* User dropdown */}
+            <div className="hidden sm:ml-3 sm:flex sm:items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-1">
+                    <User className="h-4 w-4" />
+                    <span>{userMetadata?.full_name || user?.email}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={signOut}
+                    className="text-red-600 focus:text-red-700"
                   >
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link
-                    to="/dashboard/settings"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="flex items-center cursor-pointer text-red-600 focus:text-red-600"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <div className="flex items-center sm:hidden">
-            {userRoles.length > 0 && (
-              <div className="mr-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 px-2">
-                      Roles <ChevronDown className="ml-1 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {userRoles.map((role) => (
-                      <DropdownMenuItem key={role.id} className="flex justify-center">
-                        <UserRoleBadge role={role.role as any} />
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
-
-            <button
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <span className="sr-only">
-                {mobileMenuOpen ? "Close menu" : "Open menu"}
-              </span>
-              {mobileMenuOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
-              )}
-            </button>
+                    <LogOut className="h-4 w-4 mr-2" /> Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            
+            {/* Mobile menu button */}
+            <div className="flex items-center sm:hidden">
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
-
+      
       {/* Mobile menu */}
-      {mobileMenuOpen && (
+      {isMobileMenuOpen && (
         <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                  isActive(link.path)
-                    ? "border-blue-500 text-blue-700 bg-blue-50"
-                    : "border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+          <div className="space-y-1 pt-2 pb-3">
+            <Link
+              to="/dashboard"
+              className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
+            >
+              Dashboard
+            </Link>
+            {/* More mobile nav links will be added here */}
           </div>
-          <div className="pt-4 pb-3 border-t border-gray-200">
+          
+          {/* Mobile company & role info */}
+          <div className="border-t border-gray-200 pt-4 pb-3">
             <div className="flex items-center px-4">
               <div className="flex-shrink-0">
-                <User className="h-10 w-10 rounded-full bg-gray-200 p-2" />
+                <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                  <User className="h-6 w-6 text-gray-600" />
+                </div>
               </div>
               <div className="ml-3">
                 <div className="text-base font-medium text-gray-800">
+                  {userMetadata?.full_name || user?.email}
+                </div>
+                <div className="text-sm font-medium text-gray-500">
                   {user?.email}
                 </div>
               </div>
             </div>
+            
+            {/* Company info mobile */}
+            {userMetadata?.company_name && (
+              <div className="mt-2 px-4">
+                <div className="text-sm text-gray-500">
+                  <span className="font-medium">{userMetadata.company_name}</span>
+                  <span className="ml-1">({userMetadata.company_type})</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Role badges mobile */}
+            {userRoles.length > 0 && (
+              <div className="mt-2 px-4 flex flex-wrap">
+                {userRoles.map((role) => (
+                  <span 
+                    key={role}
+                    className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 mr-1 mb-1"
+                  >
+                    {role}
+                  </span>
+                ))}
+              </div>
+            )}
+            
             <div className="mt-3 space-y-1">
               <Link
-                to="/dashboard/profile"
-                className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
+                to="/profile"
+                className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
               >
-                Your Profile
-              </Link>
-              <Link
-                to="/dashboard/settings"
-                className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Settings
+                Profile
               </Link>
               <button
-                className="block w-full text-left px-4 py-2 text-base font-medium text-red-500 hover:text-red-800 hover:bg-gray-100"
-                onClick={() => {
-                  handleSignOut();
-                  setMobileMenuOpen(false);
-                }}
+                onClick={signOut}
+                className="block w-full text-left px-4 py-2 text-base font-medium text-red-600 hover:bg-gray-100"
               >
                 Sign out
               </button>
