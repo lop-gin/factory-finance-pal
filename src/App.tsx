@@ -11,6 +11,11 @@ import LandingPage from "./pages/landing";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardPage from "./pages/dashboard";
 
+// Admin pages
+import EmployeesPage from "./pages/dashboard/employees";
+import RolesPage from "./pages/dashboard/roles";
+import CustomersPage from "./pages/dashboard/customers";
+
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -56,7 +61,19 @@ function App() {
         </ProtectedRoute>
       }>
         <Route index element={<DashboardPage />} />
-        {/* Add more dashboard routes here */}
+        
+        {/* Admin routes */}
+        <Route path="employees" element={<EmployeesPage />} />
+        <Route path="roles" element={<RolesPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        
+        {/* Original routes - kept for compatibility */}
+        <Route path="sales/invoice" element={<div>Invoice Form - Coming Soon</div>} />
+        <Route path="sales/receipt" element={<div>Sales Receipt Form - Coming Soon</div>} />
+        <Route path="sales/credit-note" element={<div>Credit Note Form - Coming Soon</div>} />
+        <Route path="sales/payment" element={<div>Payment Form - Coming Soon</div>} />
+        <Route path="sales/estimate" element={<div>Estimate Form - Coming Soon</div>} />
+        <Route path="sales/refund-receipt" element={<div>Refund Receipt Form - Coming Soon</div>} />
       </Route>
 
       {/* Catch-all redirect to 404 or home */}
