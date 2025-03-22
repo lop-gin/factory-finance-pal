@@ -38,28 +38,17 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
   return (
     <Router>
       <Routes>
         {/* Public routes */}
-        <Route 
-          path="/" 
-          element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />} 
-        />
+        <Route path="/" element={<LandingPage />} />
         
         {/* Auth routes with layout */}
-        <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <AuthLayout>{null}</AuthLayout>}>
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<RegisterPage />} />
-          <Route path="forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="reset-password" element={<ResetPasswordPage />} />
-        </Route>
+        <Route path="/auth/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
+        <Route path="/auth/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
+        <Route path="/auth/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
+        <Route path="/auth/reset-password" element={<AuthLayout><ResetPasswordPage /></AuthLayout>} />
         
         {/* Protected dashboard routes */}
         <Route path="/dashboard" element={
@@ -70,6 +59,9 @@ function App() {
           <Route index element={<DashboardPage />} />
           {/* Add more dashboard routes here */}
         </Route>
+
+        {/* Catch-all redirect to 404 or home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

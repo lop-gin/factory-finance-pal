@@ -135,7 +135,19 @@ export default function RegisterPage() {
 
     setIsLoading(true);
     try {
-      // Create user first using Supabase Auth
+      console.log("Registering user with data:", {
+        email: formData.email,
+        metadata: {
+          full_name: formData.fullName,
+          company_name: formData.companyName,
+          company_type: formData.companyType,
+          phone: formData.phone,
+          address: formData.address,
+          is_admin: true
+        }
+      });
+      
+      // Create user using Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -155,11 +167,10 @@ export default function RegisterPage() {
         throw error;
       }
 
-      // Store the additional company info in a custom table later 
-      // after the user confirms their email
-      
+      console.log("Registration successful:", data);
       toast.success("Registration successful! Please check your email to verify your account.");
-      navigate("/auth/login");
+      
+      // AuthProvider will handle redirection
     } catch (error: any) {
       console.error("Registration error:", error);
       toast.error(error.message || "Failed to register");

@@ -67,11 +67,13 @@ export default function LoginPage() {
         throw error;
       }
 
+      console.log("Login successful", data);
       toast.success("Login successful");
-      navigate("/dashboard");
+      
+      // AuthProvider will handle redirection
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign in");
       console.error("Login error:", error);
+      toast.error(error.message || "Failed to sign in");
     } finally {
       setIsLoading(false);
     }
