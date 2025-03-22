@@ -1,5 +1,5 @@
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
@@ -8,12 +8,12 @@ export default function LandingPage() {
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <div className="text-2xl font-bold text-blue-900">InventoryPro</div>
         <div>
-          <Link href="/auth/login">
+          <Link to="/auth/login">
             <Button variant="ghost" className="mr-2">
               Sign In
             </Button>
           </Link>
-          <Link href="/auth/register">
+          <Link to="/auth/register">
             <Button>Sign Up</Button>
           </Link>
         </div>
@@ -30,12 +30,12 @@ export default function LandingPage() {
               sales, and operations in one powerful platform.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/auth/register">
+              <Link to="/auth/register">
                 <Button size="lg" className="px-8">
                   Get Started
                 </Button>
               </Link>
-              <Link href="/auth/login">
+              <Link to="/auth/login">
                 <Button size="lg" variant="outline" className="px-8">
                   Sign In
                 </Button>
@@ -89,12 +89,12 @@ export default function LandingPage() {
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/auth/register" className="text-blue-200 hover:text-white">
+                  <Link to="/auth/register" className="text-blue-200 hover:text-white">
                     Create Account
                   </Link>
                 </li>
                 <li>
-                  <Link href="/auth/login" className="text-blue-200 hover:text-white">
+                  <Link to="/auth/login" className="text-blue-200 hover:text-white">
                     Sign In
                   </Link>
                 </li>

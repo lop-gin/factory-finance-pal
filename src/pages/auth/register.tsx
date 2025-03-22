@@ -1,10 +1,7 @@
 
-"use client";
-
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
-import Link from "next/link";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,7 +33,7 @@ const registerSchema = z.object({
 type FormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -76,10 +73,10 @@ export default function RegisterPage() {
     if (currentStep === 1) {
       try {
         z.object({
-          fullName: registerSchema.shape.fullName,
-          companyName: registerSchema.shape.companyName,
-          companyType: registerSchema.shape.companyType,
-          email: registerSchema.shape.email,
+          fullName: z.string().min(3, "Full name must be at least 3 characters"),
+          companyName: z.string().min(2, "Company name must be at least 2 characters"),
+          companyType: z.enum(["manufacturer", "distributor", "both"]),
+          email: z.string().email("Please enter a valid email"),
         }).parse(formData);
         setErrors({});
         return true;
@@ -98,8 +95,8 @@ export default function RegisterPage() {
     } else if (currentStep === 2) {
       try {
         z.object({
-          password: registerSchema.shape.password,
-          confirmPassword: registerSchema.shape.confirmPassword,
+          password: z.string().min(6, "Password must be at least 6 characters"),
+          confirmPassword: z.string().min(6, "Please confirm your password"),
         })
           .refine((data) => data.password === data.confirmPassword, {
             message: "Passwords do not match",
@@ -158,6 +155,7 @@ export default function RegisterPage() {
         throw companyError;
       }
 
+      // Get the company ID
       const companyId = companyData.id;
 
       // Then, sign up the user
@@ -178,21 +176,23 @@ export default function RegisterPage() {
       }
 
       // Update profile with company_id and set as admin
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          company_id: companyId,
-          is_admin: true,
-          full_name: formData.fullName,
-        })
-        .eq("id", data.user?.id);
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({
+            company_id: companyId,
+            is_admin: true,
+            full_name: formData.fullName,
+          })
+          .eq("id", data.user.id);
 
-      if (profileError) {
-        throw profileError;
+        if (profileError) {
+          throw profileError;
+        }
       }
 
       toast.success("Registration successful! Please check your email to verify your account.");
-      router.push("/auth/login");
+      navigate("/auth/login");
     } catch (error: any) {
       toast.error(error.message || "Failed to register");
       console.error("Registration error:", error);
@@ -452,7 +452,7 @@ export default function RegisterPage() {
         <p className="text-sm text-gray-600">
           Already have an account?{" "}
           <Link
-            href="/auth/login"
+            to="/auth/login"
             className="text-blue-600 hover:underline font-medium"
           >
             Sign in

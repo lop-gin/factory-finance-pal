@@ -1,41 +1,78 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import DashboardPage from "./app/dashboard/page";
-import InvoicePage from "./app/dashboard/sales/invoice/page";
-import SalesReceiptPage from "./app/dashboard/sales/receipt/page";
-import CreditNotePage from "./app/dashboard/sales/credit-note/page";
-import PaymentPage from "./app/dashboard/sales/payment/page";
-import EstimatePage from "./app/dashboard/sales/estimate/page";
-import RefundReceiptPage from "./app/dashboard/sales/refund-receipt/page";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./components/auth/AuthProvider";
 
-const queryClient = new QueryClient();
+// Auth pages
+import LoginPage from "./pages/auth/login";
+import RegisterPage from "./pages/auth/register";
+import ForgotPasswordPage from "./pages/auth/forgot-password";
+import ResetPasswordPage from "./pages/auth/reset-password";
+import LandingPage from "./pages/landing";
+import DashboardLayout from "./layouts/DashboardLayout";
+import DashboardPage from "./pages/dashboard";
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/dashboard/sales/invoice" element={<InvoicePage />} />
-          <Route path="/dashboard/sales/receipt" element={<SalesReceiptPage />} />
-          <Route path="/dashboard/sales/credit-note" element={<CreditNotePage />} />
-          <Route path="/dashboard/sales/payment" element={<PaymentPage />} />
-          <Route path="/dashboard/sales/estimate" element={<EstimatePage />} />
-          <Route path="/dashboard/sales/refund-receipt" element={<RefundReceiptPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+// Protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Auth layout wrapper
+const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-indigo-100 p-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+function App() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  return (
+    <Router>
+      <Routes>
+        {/* Public routes */}
+        <Route 
+          path="/" 
+          element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />} 
+        />
+        
+        {/* Auth routes with layout */}
+        <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <AuthLayout>{null}</AuthLayout>}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
+        </Route>
+        
+        {/* Protected dashboard routes */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<DashboardPage />} />
+          {/* Add more dashboard routes here */}
+        </Route>
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;

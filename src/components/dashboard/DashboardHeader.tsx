@@ -2,8 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, LogOut, User, Settings } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ export interface UserRole {
 export default function DashboardHeader() {
   const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const location = useLocation();
 
   // Mock roles for demonstration - in production, fetch from the database
   const [userRoles] = useState<UserRole[]>([
@@ -54,9 +53,9 @@ export default function DashboardHeader() {
 
   const isActive = (path: string) => {
     if (path === "/dashboard") {
-      return pathname === "/dashboard";
+      return location.pathname === "/dashboard";
     }
-    return pathname.startsWith(path);
+    return location.pathname.startsWith(path);
   };
 
   return (
@@ -65,7 +64,7 @@ export default function DashboardHeader() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/dashboard" className="text-xl font-bold text-blue-600">
+              <Link to="/dashboard" className="text-xl font-bold text-blue-600">
                 InventoryPro
               </Link>
             </div>
@@ -73,7 +72,7 @@ export default function DashboardHeader() {
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
-                  href={link.path}
+                  to={link.path}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 ${
                     isActive(link.path)
                       ? "border-blue-500 text-gray-900"
@@ -115,7 +114,7 @@ export default function DashboardHeader() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/dashboard/profile"
+                    to="/dashboard/profile"
                     className="flex items-center cursor-pointer"
                   >
                     <User className="mr-2 h-4 w-4" />
@@ -124,7 +123,7 @@ export default function DashboardHeader() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/dashboard/settings"
+                    to="/dashboard/settings"
                     className="flex items-center cursor-pointer"
                   >
                     <Settings className="mr-2 h-4 w-4" />
@@ -188,7 +187,7 @@ export default function DashboardHeader() {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                href={link.path}
+                to={link.path}
                 className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
                   isActive(link.path)
                     ? "border-blue-500 text-blue-700 bg-blue-50"
@@ -213,14 +212,14 @@ export default function DashboardHeader() {
             </div>
             <div className="mt-3 space-y-1">
               <Link
-                href="/dashboard/profile"
+                to="/dashboard/profile"
                 className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Your Profile
               </Link>
               <Link
-                href="/dashboard/settings"
+                to="/dashboard/settings"
                 className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >

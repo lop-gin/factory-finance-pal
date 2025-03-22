@@ -1,9 +1,7 @@
 
-"use client";
-
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Mail } from "lucide-react";
-import Link from "next/link";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,7 +71,7 @@ export default function ForgotPasswordPage() {
             We&apos;ve sent a password reset link to <strong>{email}</strong>
           </p>
           <div className="pt-4">
-            <Link href="/auth/login">
+            <Link to="/auth/login">
               <Button variant="outline" className="w-full">
                 Back to Sign in
               </Button>
@@ -134,7 +132,7 @@ export default function ForgotPasswordPage() {
 
           <div className="text-center">
             <Link
-              href="/auth/login"
+              to="/auth/login"
               className="text-sm text-blue-600 hover:underline"
             >
               Back to Sign in
