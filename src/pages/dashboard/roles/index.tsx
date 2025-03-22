@@ -47,7 +47,7 @@ export default function RolesPage() {
           id: role.id,
           name: role.name,
           description: role.description,
-          created_at: role.created_at,
+          created_at: new Date(role.created_at), // Convert string to Date object
           permissions: role.role_permissions
         }));
 
