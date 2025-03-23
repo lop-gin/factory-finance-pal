@@ -16,7 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 interface EmployeeFormProps {
   employeeId?: string; // If provided, we're editing an existing employee
-  onSuccess?: () => void; // Add this prop to handle success
+  onSuccess?: () => void; // Callback when operation is successful
 }
 
 interface Role {
@@ -90,23 +90,27 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
         try {
           const { data, error } = await supabase
             .from('profiles')
-            .select(`
-              id,
-              full_name,
-              phone,
-              role_id,
-              status,
-              email
-            `)
+            .select('id, full_name, phone, role_id, status')
             .eq('id', employeeId)
             .single();
 
           if (error) throw error;
           
           if (data) {
+            // Get user email separately since it might be in the auth table
+            const { data: userData, error: authError } = await supabase
+              .from('users')
+              .select('email')
+              .eq('id', employeeId)
+              .single();
+              
+            if (authError && !authError.message.includes('no rows returned')) {
+              throw authError;
+            }
+            
             form.reset({
               full_name: data.full_name || "",
-              email: data.email || "",
+              email: userData?.email || "",
               phone: data.phone || "",
               role_id: data.role_id || "",
               status: (data.status as "active" | "inactive") || "active"
@@ -152,9 +156,9 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
         });
       } else {
         // For new employees - create profile and handle user creation
-        // First, check if the email is already in use
+        // Check if the email is already in use
         const { data: existingUsers, error: checkError } = await supabase
-          .from('profiles')
+          .from('users')
           .select('id')
           .eq('email', values.email);
           
@@ -164,25 +168,37 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
           throw new Error("An account with this email already exists");
         }
         
-        // Create new profile
-        const { data, error } = await supabase
-          .from('profiles')
-          .insert({
-            email: values.email,
-            full_name: values.full_name,
-            phone: values.phone,
-            role_id: values.role_id,
-            status: "invited", // Set as invited until they accept
-            updated_at: new Date().toISOString()
-          })
-          .select();
-          
-        if (error) throw error;
-        
-        toast({
-          title: "Employee invited",
-          description: `An invitation has been sent to ${values.email}`,
+        // Create new user first (this might vary based on your auth implementation)
+        const { data: newUser, error: userError } = await supabase.auth.admin.createUser({
+          email: values.email,
+          email_confirm: true,
+          user_metadata: {
+            full_name: values.full_name
+          }
         });
+        
+        if (userError) throw userError;
+        
+        // Then create profile record
+        if (newUser && newUser.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: newUser.user.id,
+              full_name: values.full_name,
+              phone: values.phone,
+              role_id: values.role_id,
+              status: "invited", // Set as invited until they accept
+              updated_at: new Date().toISOString()
+            });
+            
+          if (profileError) throw profileError;
+          
+          toast({
+            title: "Employee invited",
+            description: `An invitation has been sent to ${values.email}`,
+          });
+        }
       }
       
       // Call onSuccess callback if provided

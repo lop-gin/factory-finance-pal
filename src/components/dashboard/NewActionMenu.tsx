@@ -94,9 +94,9 @@ const NewActionMenu: React.FC<NewActionMenuProps> = ({ isOpen, onClose, sidebarO
   return (
     <div
       ref={menuRef}
-      className="fixed bg-white rounded-md shadow-lg z-50 border border-gray-200 max-h-[calc(100vh-120px)] overflow-y-auto"
+      className="fixed bg-white rounded-md shadow-lg z-[100] border border-gray-200 max-h-[calc(100vh-120px)] overflow-y-auto"
       style={{ 
-        left: sidebarOpen ? '16rem' : '2.5rem',
+        left: sidebarOpen ? '270px' : '60px',
         top: '70px',
         width: 'auto',
         minWidth: '650px'

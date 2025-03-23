@@ -62,9 +62,10 @@ const SidebarItem = ({ icon, label, path, active = false, hasChildren = false }:
 interface DashboardSidebarProps {
   isOpen: boolean;
   toggle: () => void;
+  toggleNewMenu: () => void;
 }
 
-export default function DashboardSidebar({ isOpen, toggle }: DashboardSidebarProps) {
+export default function DashboardSidebar({ isOpen, toggle, toggleNewMenu }: DashboardSidebarProps) {
   const location = useLocation();
   
   // Determine active route
@@ -87,11 +88,19 @@ export default function DashboardSidebar({ isOpen, toggle }: DashboardSidebarPro
 
   return (
     <div className="bg-[#2c2c2c] h-screen w-64 fixed left-0 top-0 flex flex-col z-50 border-r border-[#3a3a3a]">
-      <QBLogo />
+      <div className="flex items-center justify-between">
+        <QBLogo />
+        <button 
+          onClick={toggle}
+          className="p-2 text-gray-400 hover:text-white mr-2"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
       
       <div className="p-2">
         <button
-          onClick={toggle}
+          onClick={toggleNewMenu}
           className="p-2 text-white bg-[#21a366] hover:bg-[#1a8553] rounded-md w-full flex items-center justify-center mb-2"
         >
           <PlusIcon className="h-4 w-4 mr-1" /> New
