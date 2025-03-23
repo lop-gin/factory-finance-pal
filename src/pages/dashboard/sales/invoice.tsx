@@ -4,15 +4,15 @@ import { useInvoiceForm } from '@/hooks/useInvoiceForm';
 
 export default function InvoiceFormPage() {
   const { 
-    formState, 
-    handleCustomerChange, 
-    handleDateChange, 
-    handleItemChange, 
-    handleAddItem, 
-    handleRemoveItem, 
-    handleFormSubmit, 
-    handleReset, 
-    validationErrors 
+    invoice, 
+    updateInvoice, 
+    updateCustomer, 
+    addInvoiceItem, 
+    updateInvoiceItem, 
+    removeInvoiceItem, 
+    saveInvoice, 
+    clearAllItems,
+    updateOtherFees
   } = useInvoiceForm();
 
   return (

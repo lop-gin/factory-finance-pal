@@ -18,7 +18,8 @@ import {
   PlusIcon,
   X,
   ChevronLeft,
-  ChevronDown
+  ChevronDown,
+  Menu
 } from "lucide-react";
 
 // QB Logo component
@@ -78,7 +79,7 @@ export default function DashboardSidebar({ isOpen, toggle }: DashboardSidebarPro
           onClick={toggle} 
           className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-[#393939]"
         >
-          <MenuIcon className="h-5 w-5" />
+          <Menu className="h-5 w-5" />
         </button>
       </div>
     );

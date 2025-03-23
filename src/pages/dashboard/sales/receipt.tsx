@@ -4,15 +4,15 @@ import { useSalesReceiptForm } from '@/hooks/useSalesReceiptForm';
 
 export default function SalesReceiptFormPage() {
   const { 
-    formState, 
-    handleCustomerChange, 
-    handleDateChange, 
-    handleItemChange, 
-    handleAddItem, 
-    handleRemoveItem, 
-    handleFormSubmit, 
-    handleReset, 
-    validationErrors 
+    salesReceipt, 
+    updateSalesReceipt, 
+    updateCustomer, 
+    addSalesReceiptItem, 
+    updateSalesReceiptItem, 
+    removeSalesReceiptItem, 
+    saveSalesReceipt, 
+    clearAllItems,
+    updateOtherFees
   } = useSalesReceiptForm();
 
   return (

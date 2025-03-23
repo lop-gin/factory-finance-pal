@@ -16,6 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 interface EmployeeFormProps {
   employeeId?: string; // If provided, we're editing an existing employee
+  onSuccess?: () => void; // Add this prop to handle success
 }
 
 interface Role {
@@ -33,7 +34,7 @@ const employeeSchema = z.object({
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>;
 
-const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
+const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const isEditing = !!employeeId;
@@ -95,7 +96,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
               phone,
               role_id,
               status,
-              user:id(email)
+              email
             `)
             .eq('id', employeeId)
             .single();
@@ -105,7 +106,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
           if (data) {
             form.reset({
               full_name: data.full_name || "",
-              email: data.user?.email || "",
+              email: data.email || "",
               phone: data.phone || "",
               role_id: data.role_id || "",
               status: (data.status as "active" | "inactive") || "active"
@@ -130,7 +131,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
     setIsSaving(true);
     
     try {
-      if (isEditing) {
+      if (isEditing && employeeId) {
         // Update existing employee
         const { error } = await supabase
           .from('profiles')
@@ -150,10 +151,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
           description: `Employee "${values.full_name}" has been updated successfully`,
         });
       } else {
-        // For new employees, we need to:
-        // 1. Create a user account with Supabase Auth
-        // 2. Link the profile to that account
-        
+        // For new employees - create profile and handle user creation
         // First, check if the email is already in use
         const { data: existingUsers, error: checkError } = await supabase
           .from('profiles')
@@ -166,14 +164,11 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
           throw new Error("An account with this email already exists");
         }
         
-        // Create the new user account and send an invitation email
-        // Note: In a real app, you'd likely use a server-side function for this,
-        // as client-side signup has limitations
-        
-        // For this implementation, we'll simulate the process by creating a profile
+        // Create new profile
         const { data, error } = await supabase
           .from('profiles')
           .insert({
+            email: values.email,
             full_name: values.full_name,
             phone: values.phone,
             role_id: values.role_id,
@@ -190,7 +185,12 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
         });
       }
       
-      navigate('/dashboard/employees');
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/dashboard/employees');
+      }
       
     } catch (error: any) {
       toast({
