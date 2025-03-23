@@ -75,7 +75,7 @@ export default function DashboardSidebar({ isOpen, toggle, toggleNewMenu }: Dash
   };
 
   if (!isOpen) {
-    return null;
+    return null; // Return null instead of a small bar
   }
 
   return (
@@ -94,7 +94,7 @@ export default function DashboardSidebar({ isOpen, toggle, toggleNewMenu }: Dash
         <button
           ref={newButtonRef}
           onClick={toggleNewMenu}
-          className="p-2 text-white border-2 border-[#4a4a4a] hover:bg-[#3a3a3a] rounded-xl w-full flex items-center justify-center mb-2 bg-[#2c2c2c]"
+          className="p-2 text-white border border-[#4a4a4a] hover:bg-[#3a3a3a] rounded-md w-full flex items-center justify-center mb-2 bg-[#2c2c2c]"
         >
           <PlusIcon className="h-4 w-4 mr-1" /> New
         </button>

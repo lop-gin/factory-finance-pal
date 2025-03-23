@@ -33,11 +33,11 @@ const NewActionMenu: React.FC<NewActionMenuProps> = ({ isOpen, onClose, sidebarO
 
   // Calculate position based on the button reference
   const getMenuPosition = () => {
-    if (!buttonRef.current) return { top: '80px', left: '16px' }; // Moved down by 10px
+    if (!buttonRef.current) return { top: '70px', left: '16px' };
     
     const buttonRect = buttonRef.current.getBoundingClientRect();
     return {
-      top: `${buttonRect.bottom + window.scrollY + 10}px`, // Added 10px offset
+      top: `${buttonRect.bottom + window.scrollY}px`,
       left: `${buttonRect.left + window.scrollX}px`
     };
   };
