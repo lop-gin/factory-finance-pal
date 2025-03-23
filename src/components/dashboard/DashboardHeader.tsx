@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { LogOut, Menu, ChevronDown, Search, Bell, Settings, HelpCircle, Grid } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { UserRoleBadge } from "@/components/ui/user-role-badge";
@@ -27,11 +26,7 @@ export default function DashboardHeader({ sidebarOpen, toggleSidebar }: Dashboar
   if (userMetadata?.is_admin) {
     userRoles.push('admin');
   }
-  if (userMetadata?.role_id) {
-    // If there's a role_id, we can add it to the roles
-    userRoles.push(userMetadata.role_id);
-  }
-
+  
   return (
     <header className="bg-white shadow-sm sticky top-0 z-30">
       <div className="h-16 flex items-center justify-between px-4">
@@ -46,34 +41,35 @@ export default function DashboardHeader({ sidebarOpen, toggleSidebar }: Dashboar
             </button>
           )}
           
-          <div className="flex items-center text-gray-700">
-            <span className="text-sm">Company ID</span>
-            <span className="ml-20 text-sm">9341 4534 5906 5444</span>
+          {/* User and company info */}
+          <div className="flex items-center space-x-4">
+            {userMetadata?.company_name && (
+              <div className="text-gray-700 font-medium">
+                {userMetadata.company_name}
+              </div>
+            )}
+            <div className="flex items-center">
+              <span className="text-sm text-gray-600 mr-2">
+                {userMetadata?.full_name || user?.email}
+              </span>
+              
+              {/* Display role badges */}
+              {userRoles.length > 0 && (
+                <div className="flex">
+                  {userRoles.map((role) => (
+                    <UserRoleBadge 
+                      key={role} 
+                      role={role as any} 
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
-        {/* Right section */}
-        <div className="flex items-center space-x-3">
-          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
-            <HelpCircle className="h-5 w-5" />
-          </button>
-          
-          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
-            <Grid className="h-5 w-5" />
-          </button>
-          
-          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
-            <Search className="h-5 w-5" />
-          </button>
-          
-          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
-            <Bell className="h-5 w-5" />
-          </button>
-          
-          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
-            <Settings className="h-5 w-5" />
-          </button>
-          
+        {/* Right section - Profile dropdown only */}
+        <div className="flex items-center">
           {/* User dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -129,7 +125,7 @@ export default function DashboardHeader({ sidebarOpen, toggleSidebar }: Dashboar
         </div>
       </div>
       
-      {/* Mobile menu - keep the implementation for mobile responsiveness */}
+      {/* Mobile menu - only shown when needed */}
       {isMobileMenuOpen && (
         <div className="sm:hidden">
           <div className="space-y-1 pt-2 pb-3">
@@ -203,3 +199,4 @@ export default function DashboardHeader({ sidebarOpen, toggleSidebar }: Dashboar
     </header>
   );
 }
+

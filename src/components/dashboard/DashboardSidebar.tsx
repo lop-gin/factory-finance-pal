@@ -75,16 +75,7 @@ export default function DashboardSidebar({ isOpen, toggle, toggleNewMenu }: Dash
   };
 
   if (!isOpen) {
-    return (
-      <div className="bg-[#2c2c2c] h-screen w-12 fixed left-0 top-0 flex flex-col items-center pt-4 z-50 border-r border-[#3a3a3a]">
-        <button 
-          onClick={toggle} 
-          className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-[#393939]"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-      </div>
-    );
+    return null; // Return null instead of a small bar
   }
 
   return (

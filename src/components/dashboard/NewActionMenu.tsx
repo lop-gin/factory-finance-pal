@@ -33,7 +33,7 @@ const NewActionMenu: React.FC<NewActionMenuProps> = ({ isOpen, onClose, sidebarO
 
   // Calculate position based on the button reference
   const getMenuPosition = () => {
-    if (!buttonRef.current) return { top: '70px', left: sidebarOpen ? '270px' : '60px' };
+    if (!buttonRef.current) return { top: '70px', left: '16px' };
     
     const buttonRect = buttonRef.current.getBoundingClientRect();
     return {

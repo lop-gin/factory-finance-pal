@@ -21,16 +21,18 @@ export default function DashboardLayout() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <DashboardSidebar 
-        isOpen={sidebarOpen} 
-        toggle={toggleSidebar} 
-        toggleNewMenu={toggleNewMenu}
-      />
+      {sidebarOpen && (
+        <DashboardSidebar 
+          isOpen={sidebarOpen} 
+          toggle={toggleSidebar} 
+          toggleNewMenu={toggleNewMenu}
+        />
+      )}
 
       {/* Main content */}
       <div 
         className="flex-1 flex flex-col min-h-screen transition-all duration-300"
-        style={{ marginLeft: sidebarOpen ? '16rem' : '3rem' }}
+        style={{ marginLeft: sidebarOpen ? '16rem' : '0' }}
       >
         <DashboardHeader 
           sidebarOpen={sidebarOpen} 
