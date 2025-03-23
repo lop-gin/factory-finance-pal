@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { LogOut, Menu, User, ChevronDown } from "lucide-react";
+import { LogOut, Menu, User, ChevronDown, Search, Bell, Settings, HelpCircle, Grid } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  sidebarOpen: boolean;
+  toggleSidebar: () => void;
+}
+
+export default function DashboardHeader({ sidebarOpen, toggleSidebar }: DashboardHeaderProps) {
   const { user, userMetadata, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -24,91 +28,74 @@ export default function DashboardHeader() {
   // More roles can be added here as the system develops
 
   return (
-    <header className="bg-white shadow-sm">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between">
-          <div className="flex">
-            <div className="flex flex-shrink-0 items-center">
-              <Link to="/dashboard" className="text-xl font-bold text-gray-900">
-                InventoryPro
-              </Link>
-            </div>
-            <nav className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-              >
-                Dashboard
-              </Link>
-              {/* More nav links will be added here */}
-            </nav>
-          </div>
+    <header className="bg-white shadow-sm sticky top-0 z-30">
+      <div className="h-16 flex items-center justify-between px-4">
+        {/* Left section */}
+        <div className="flex items-center">
+          {!sidebarOpen && (
+            <button 
+              onClick={toggleSidebar}
+              className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 mr-2"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          )}
           
-          <div className="flex items-center">
-            {/* Company info */}
-            {userMetadata?.company_name && (
-              <div className="hidden sm:flex sm:items-center sm:mr-4">
-                <div className="text-sm text-gray-500">
-                  <span className="font-medium">{userMetadata.company_name}</span>
-                  <span className="ml-1">({userMetadata.company_type})</span>
-                </div>
-              </div>
-            )}
-            
-            {/* Role badges */}
-            {userRoles.length > 0 && (
-              <div className="hidden sm:flex sm:items-center sm:mr-4">
-                {userRoles.map((role) => (
-                  <span 
-                    key={role}
-                    className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 mr-1"
-                  >
-                    {role}
-                  </span>
-                ))}
-              </div>
-            )}
-            
-            {/* User dropdown */}
-            <div className="hidden sm:ml-3 sm:flex sm:items-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-1">
-                    <User className="h-4 w-4" />
-                    <span>{userMetadata?.full_name || user?.email}</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile">Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={signOut}
-                    className="text-red-600 focus:text-red-700"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" /> Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            
-            {/* Mobile menu button */}
-            <div className="flex items-center sm:hidden">
-              <button
-                type="button"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
-              >
-                <Menu className="h-6 w-6" />
-              </button>
-            </div>
+          <div className="flex items-center text-gray-700">
+            <span className="text-sm">Company ID</span>
+            <span className="ml-20 text-sm">9341 4534 5906 5444</span>
           </div>
+        </div>
+        
+        {/* Right section */}
+        <div className="flex items-center space-x-3">
+          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+            <HelpCircle className="h-5 w-5" />
+          </button>
+          
+          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+            <Grid className="h-5 w-5" />
+          </button>
+          
+          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+            <Search className="h-5 w-5" />
+          </button>
+          
+          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+            <Bell className="h-5 w-5" />
+          </button>
+          
+          <button className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
+            <Settings className="h-5 w-5" />
+          </button>
+          
+          {/* User dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center justify-center rounded-full bg-blue-500 text-white h-8 w-8 hover:bg-blue-600">
+                {userMetadata?.full_name ? userMetadata.full_name.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <div className="px-2 py-1.5 text-sm font-medium">
+                {userMetadata?.full_name || user?.email}
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/profile">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={signOut}
+                className="text-red-600 focus:text-red-700"
+              >
+                <LogOut className="h-4 w-4 mr-2" /> Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
-      {/* Mobile menu */}
+      {/* Mobile menu - keep the implementation for mobile responsiveness */}
       {isMobileMenuOpen && (
         <div className="sm:hidden">
           <div className="space-y-1 pt-2 pb-3">
