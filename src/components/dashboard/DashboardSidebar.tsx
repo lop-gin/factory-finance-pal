@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   ChevronRight, 
@@ -67,6 +67,7 @@ interface DashboardSidebarProps {
 
 export default function DashboardSidebar({ isOpen, toggle, toggleNewMenu }: DashboardSidebarProps) {
   const location = useLocation();
+  const newButtonRef = useRef<HTMLButtonElement>(null);
   
   // Determine active route
   const isActive = (path: string) => {
@@ -100,8 +101,9 @@ export default function DashboardSidebar({ isOpen, toggle, toggleNewMenu }: Dash
       
       <div className="p-2">
         <button
+          ref={newButtonRef}
           onClick={toggleNewMenu}
-          className="p-2 text-white bg-[#21a366] hover:bg-[#1a8553] rounded-md w-full flex items-center justify-center mb-2"
+          className="p-2 text-white border border-[#4a4a4a] hover:bg-[#3a3a3a] rounded-md w-full flex items-center justify-center mb-2 bg-[#2c2c2c]"
         >
           <PlusIcon className="h-4 w-4 mr-1" /> New
         </button>

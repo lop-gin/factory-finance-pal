@@ -7,6 +7,7 @@ interface NewActionMenuProps {
   isOpen: boolean;
   onClose: () => void;
   sidebarOpen: boolean;
+  buttonRef: React.RefObject<HTMLButtonElement>;
 }
 
 interface ActionItem {
@@ -14,7 +15,7 @@ interface ActionItem {
   to: string;
 }
 
-const NewActionMenu: React.FC<NewActionMenuProps> = ({ isOpen, onClose, sidebarOpen }) => {
+const NewActionMenu: React.FC<NewActionMenuProps> = ({ isOpen, onClose, sidebarOpen, buttonRef }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,6 +30,19 @@ const NewActionMenu: React.FC<NewActionMenuProps> = ({ isOpen, onClose, sidebarO
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
+
+  // Calculate position based on the button reference
+  const getMenuPosition = () => {
+    if (!buttonRef.current) return { top: '70px', left: sidebarOpen ? '270px' : '60px' };
+    
+    const buttonRect = buttonRef.current.getBoundingClientRect();
+    return {
+      top: `${buttonRect.bottom + window.scrollY}px`,
+      left: `${buttonRect.left + window.scrollX}px`
+    };
+  };
+  
+  const position = getMenuPosition();
 
   const categories = [
     {
@@ -96,8 +110,8 @@ const NewActionMenu: React.FC<NewActionMenuProps> = ({ isOpen, onClose, sidebarO
       ref={menuRef}
       className="fixed bg-white rounded-md shadow-lg z-[100] border border-gray-200 max-h-[calc(100vh-120px)] overflow-y-auto"
       style={{ 
-        left: sidebarOpen ? '270px' : '60px',
-        top: '70px',
+        top: position.top,
+        left: position.left,
         width: 'auto',
         minWidth: '650px'
       }}

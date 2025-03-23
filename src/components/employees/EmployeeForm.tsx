@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -97,9 +96,8 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
           if (error) throw error;
           
           if (data) {
-            // We need to handle email separately since it's not in the profiles table
-            // Get user's email from auth.users table through RPC or edge function
-            // For now, we'll just use a placeholder or previous value
+            // We need to get the email separately from auth service
+            // For now we just keep the existing value since we can't directly access auth users
             form.reset({
               full_name: data.full_name || "",
               email: form.getValues().email, // Keep the existing email value
@@ -147,28 +145,22 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
           description: `Employee "${values.full_name}" has been updated successfully`,
         });
       } else {
-        // For new employees - since we don't have direct access to auth.users,
-        // we need to use Supabase Auth API to create a user and then add profile
-        
+        // For new employees
         try {
-          // First, check if a profile with this email exists already
-          const { count, error: countError } = await supabase
-            .from('profiles')
-            .select('id', { count: 'exact', head: true });
+          // Generate a temporary ID for the profile
+          const tempId = crypto.randomUUID();
           
-          if (countError) throw countError;
-          
-          // Create profile directly - in a real app, you'd need to handle auth separately
-          const { data: newProfile, error: profileError } = await supabase
+          // Insert the profile
+          const { error: profileError } = await supabase
             .from('profiles')
             .insert({
+              id: tempId, // Use the temporary ID
               full_name: values.full_name,
               phone: values.phone,
               role_id: values.role_id,
               status: "invited", // Set as invited until they accept
               updated_at: new Date().toISOString()
-            })
-            .select();
+            });
             
           if (profileError) throw profileError;
           

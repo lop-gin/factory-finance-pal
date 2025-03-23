@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
@@ -8,6 +8,7 @@ import NewActionMenu from "../components/dashboard/NewActionMenu";
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [newMenuOpen, setNewMenuOpen] = useState(false);
+  const newButtonRef = useRef<HTMLButtonElement>(null);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -42,6 +43,7 @@ export default function DashboardLayout() {
             isOpen={newMenuOpen} 
             onClose={() => setNewMenuOpen(false)} 
             sidebarOpen={sidebarOpen}
+            buttonRef={newButtonRef}
           />
         )}
 
