@@ -38,7 +38,7 @@ export const DateField: React.FC<DateFieldProps> = ({
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal h-9 text-xs",
+              "w-full justify-start text-left font-normal h-9 text-xs bg-white",
               !date && "text-muted-foreground"
             )}
           >
@@ -50,13 +50,12 @@ export const DateField: React.FC<DateFieldProps> = ({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 bg-white border shadow-md" align="start">
           <Calendar
             mode="single"
             selected={date}
             onSelect={(date) => date && onDateChange(date)}
             initialFocus
-            className={cn("p-3 pointer-events-auto")}
           />
         </PopoverContent>
       </Popover>
@@ -79,10 +78,10 @@ export const TermsSelect: React.FC<TermsSelectProps> = ({
         <Label className="text-xs font-medium text-gray-600 mr-1">Terms</Label>
       </div>
       <Select value={terms} onValueChange={onTermsChange}>
-        <SelectTrigger className="h-9 text-xs w-full">
+        <SelectTrigger className="h-9 text-xs w-full bg-white">
           <SelectValue placeholder="Select terms" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white text-gray-700">
           <SelectItem value="Due on receipt">Due on receipt</SelectItem>
           <SelectItem value="Net 15">Net 15</SelectItem>
           <SelectItem value="Net 30">Net 30</SelectItem>
