@@ -9,13 +9,13 @@ export default function RefundReceiptFormPage() {
     refundReceipt,
     updateRefundReceipt,
     updateCustomer,
-    addItem,
-    updateItem,
-    removeItem,
+    addDocumentItem,
+    updateDocumentItem,
+    removeDocumentItem,
     saveRefundReceipt,
-    payments,
-    selectedPayment,
-    setSelectedPayment
+    referencedPayments = [],
+    selectedReferencedPayment = null,
+    setSelectedReferencedPayment = () => {}
   } = useRefundReceiptForm();
 
   return (
@@ -26,18 +26,22 @@ export default function RefundReceiptFormPage() {
         refundReceipt={refundReceipt}
         onUpdate={updateRefundReceipt}
         onCustomerChange={updateCustomer}
-        payments={payments}
-        selectedPayment={selectedPayment}
-        onSelectPayment={setSelectedPayment}
+        payments={referencedPayments}
+        selectedPayment={selectedReferencedPayment}
+        onSelectPayment={setSelectedReferencedPayment}
       />
       
       <RefundReceiptForm 
         refundReceipt={refundReceipt}
-        onUpdate={updateRefundReceipt}
-        onAddItem={addItem}
-        onUpdateItem={updateItem}
-        onRemoveItem={removeItem}
+        updateRefundReceipt={updateRefundReceipt}
+        updateCustomer={updateCustomer}
+        addRefundReceiptItem={addDocumentItem}
+        updateRefundReceiptItem={updateDocumentItem}
+        removeRefundReceiptItem={removeDocumentItem}
         onSave={saveRefundReceipt}
+        clearAllItems={() => {}}
+        updateOtherFees={() => {}}
+        onCustomerSelect={() => {}}
       />
     </div>
   );

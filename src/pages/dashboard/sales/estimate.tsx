@@ -1,23 +1,23 @@
 
 import React from 'react';
 import { useEstimateForm } from '@/hooks/useEstimateForm';
-import CustomerSection from '@/components/forms/CustomerSection';
-import DateFields from '@/components/forms/DateFields';
-import ItemsTable from '@/components/forms/ItemsTable';
-import DocumentTotal from '@/components/forms/DocumentTotal';
-import FormMessage from '@/components/forms/FormMessage';
-import FormActions from '@/components/forms/FormActions';
-import SalesRepresentative from '@/components/forms/SalesRepresentative';
+import { CustomerSection } from '@/components/forms/CustomerSection';
+import { DateField } from '@/components/forms/DateFields';
+import { ItemsTable } from '@/components/forms/ItemsTable';
+import { DocumentTotal } from '@/components/forms/DocumentTotal';
+import { FormMessage } from '@/components/forms/FormMessage';
+import { FormActions } from '@/components/forms/FormActions';
+import { SalesRepresentative } from '@/components/forms/SalesRepresentative';
 
 export default function EstimateFormPage() {
   const { 
-    estimate, 
-    updateEstimate, 
+    document: estimate, 
+    updateDocument: updateEstimate,
     updateCustomer, 
-    addEstimateItem, 
-    updateEstimateItem, 
-    removeEstimateItem, 
-    saveEstimate, 
+    addDocumentItem: addEstimateItem, 
+    updateDocumentItem: updateEstimateItem, 
+    removeDocumentItem: removeEstimateItem, 
+    saveDocument: saveEstimate, 
     clearAllItems,
     updateOtherFees
   } = useEstimateForm();
@@ -26,56 +26,72 @@ export default function EstimateFormPage() {
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Create Estimate</h1>
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <DateFields 
-          documentDate={estimate.estimateDate} 
-          dueDate={estimate.expirationDate}
-          documentNumber={estimate.estimateNumber}
-          onUpdate={(updates) => updateEstimate(updates)}
-          documentType="estimate"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <DateField 
+            label="Estimate date"
+            date={estimate.estimateDate} 
+            onDateChange={(date) => updateEstimate({ estimateDate: date })}
+          />
+          
+          <DateField 
+            label="Expiration date"
+            date={estimate.expirationDate} 
+            onDateChange={(date) => updateEstimate({ expirationDate: date })}
+          />
+        </div>
         
         <CustomerSection 
           customer={estimate.customer}
-          onCustomerChange={updateCustomer}
+          document={estimate}
+          updateCustomer={updateCustomer} 
+          updateDocument={updateEstimate}
         />
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <ItemsTable 
           items={estimate.items}
-          onAddItem={addEstimateItem}
-          onUpdateItem={updateEstimateItem}
-          onRemoveItem={removeEstimateItem}
-          onClearItems={clearAllItems}
-          onUpdateOtherFees={updateOtherFees}
-          otherFees={estimate.otherFees}
+          addItem={addEstimateItem}
+          updateItem={updateEstimateItem}
+          removeItem={removeEstimateItem}
+          clearAllItems={clearAllItems}
+          updateOtherFees={updateOtherFees}
+          otherFees={estimate.otherFees || { description: "", amount: undefined }}
         />
         
-        <DocumentTotal 
-          subTotal={estimate.subTotal}
-          total={estimate.total}
-          balanceDue={estimate.total}
-        />
+        <div className="mt-4">
+          <DocumentTotal 
+            total={estimate.total}
+            balanceDue={estimate.total}
+            otherFeesAmount={estimate.otherFees?.amount}
+            documentType="estimate"
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <FormMessage 
-          messageOnDocument={estimate.messageOnEstimate}
-          messageOnStatement={null}
-          onUpdate={(updates) => updateEstimate(updates)}
-          documentType="estimate"
+          message={estimate.messageOnInvoice || ""}
+          onChange={(message) => updateEstimate({ messageOnInvoice: message })}
+          label="MESSAGE ON ESTIMATE"
         />
         
-        <SalesRepresentative 
-          salesRep={estimate.salesRep}
-          onUpdate={(salesRep) => updateEstimate({ salesRep })}
-        />
+        <div className="mt-4">
+          <SalesRepresentative 
+            value={estimate.salesRep || ""}
+            onChange={(rep) => updateEstimate({ salesRep: rep })}
+          />
+        </div>
       </div>
 
-      <FormActions 
-        onSave={saveEstimate}
-        documentType="estimate"
-      />
+      <div className="flex justify-end mt-6">
+        <button
+          onClick={saveEstimate}
+          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+        >
+          Save Estimate
+        </button>
+      </div>
     </div>
   );
 }

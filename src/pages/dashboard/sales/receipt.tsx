@@ -1,23 +1,23 @@
 
 import React from 'react';
 import { useSalesReceiptForm } from '@/hooks/useSalesReceiptForm';
-import CustomerSection from '@/components/forms/CustomerSection';
-import DateFields from '@/components/forms/DateFields';
-import ItemsTable from '@/components/forms/ItemsTable';
-import DocumentTotal from '@/components/forms/DocumentTotal';
-import FormMessage from '@/components/forms/FormMessage';
-import FormActions from '@/components/forms/FormActions';
-import SalesRepresentative from '@/components/forms/SalesRepresentative';
+import { CustomerSection } from '@/components/forms/CustomerSection';
+import { DateField } from '@/components/forms/DateFields';
+import { ItemsTable } from '@/components/forms/ItemsTable';
+import { DocumentTotal } from '@/components/forms/DocumentTotal';
+import { FormMessage } from '@/components/forms/FormMessage';
+import { FormActions } from '@/components/forms/FormActions';
+import { SalesRepresentative } from '@/components/forms/SalesRepresentative';
 
 export default function SalesReceiptFormPage() {
   const { 
-    salesReceipt, 
-    updateSalesReceipt, 
+    document: salesReceipt, 
+    updateDocument: updateSalesReceipt, 
     updateCustomer, 
-    addSalesReceiptItem, 
-    updateSalesReceiptItem, 
-    removeSalesReceiptItem, 
-    saveSalesReceipt, 
+    addDocumentItem: addSalesReceiptItem, 
+    updateDocumentItem: updateSalesReceiptItem, 
+    removeDocumentItem: removeSalesReceiptItem, 
+    saveDocument: saveSalesReceipt, 
     clearAllItems,
     updateOtherFees
   } = useSalesReceiptForm();
@@ -26,56 +26,66 @@ export default function SalesReceiptFormPage() {
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Create Sales Receipt</h1>
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <DateFields 
-          documentDate={salesReceipt.receiptDate} 
-          dueDate={null}
-          documentNumber={salesReceipt.receiptNumber}
-          onUpdate={(updates) => updateSalesReceipt(updates)}
-          documentType="receipt"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <DateField 
+            label="Receipt date"
+            date={salesReceipt.saleDate} 
+            onDateChange={(date) => updateSalesReceipt({ saleDate: date })}
+          />
+        </div>
         
         <CustomerSection 
           customer={salesReceipt.customer}
-          onCustomerChange={updateCustomer}
+          document={salesReceipt}
+          updateCustomer={updateCustomer} 
+          updateDocument={updateSalesReceipt}
         />
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <ItemsTable 
           items={salesReceipt.items}
-          onAddItem={addSalesReceiptItem}
-          onUpdateItem={updateSalesReceiptItem}
-          onRemoveItem={removeSalesReceiptItem}
-          onClearItems={clearAllItems}
-          onUpdateOtherFees={updateOtherFees}
-          otherFees={salesReceipt.otherFees}
+          addItem={addSalesReceiptItem}
+          updateItem={updateSalesReceiptItem}
+          removeItem={removeSalesReceiptItem}
+          clearAllItems={clearAllItems}
+          updateOtherFees={updateOtherFees}
+          otherFees={salesReceipt.otherFees || { description: "", amount: undefined }}
         />
         
-        <DocumentTotal 
-          subTotal={salesReceipt.subTotal}
-          total={salesReceipt.total}
-          balanceDue={0}
-        />
+        <div className="mt-4">
+          <DocumentTotal 
+            total={salesReceipt.total}
+            balanceDue={0}
+            otherFeesAmount={salesReceipt.otherFees?.amount}
+            documentType="invoice"
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <FormMessage 
-          messageOnDocument={salesReceipt.messageOnReceipt}
-          messageOnStatement={salesReceipt.messageOnStatement}
-          onUpdate={(updates) => updateSalesReceipt(updates)}
-          documentType="receipt"
+          message={salesReceipt.messageOnInvoice || ""}
+          onChange={(message) => updateSalesReceipt({ messageOnInvoice: message })}
+          label="MESSAGE ON RECEIPT"
         />
         
-        <SalesRepresentative 
-          salesRep={salesReceipt.salesRep}
-          onUpdate={(salesRep) => updateSalesReceipt({ salesRep })}
-        />
+        <div className="mt-4">
+          <SalesRepresentative 
+            value={salesReceipt.salesRep || ""}
+            onChange={(rep) => updateSalesReceipt({ salesRep: rep })}
+          />
+        </div>
       </div>
 
-      <FormActions 
-        onSave={saveSalesReceipt}
-        documentType="receipt"
-      />
+      <div className="flex justify-end mt-6">
+        <button
+          onClick={saveSalesReceipt}
+          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+        >
+          Save Receipt
+        </button>
+      </div>
     </div>
   );
 }

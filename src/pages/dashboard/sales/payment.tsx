@@ -1,22 +1,21 @@
 
 import React from 'react';
 import { usePaymentForm } from '@/hooks/usePaymentForm';
-import PaymentForm from '@/components/payment/PaymentForm';
-import OutstandingInvoicesTable from '@/components/payment/OutstandingInvoicesTable';
-import AmountReceivedInput from '@/components/payment/AmountReceivedInput';
-import PaymentSummary from '@/components/payment/PaymentSummary';
+import { PaymentForm } from '@/components/payment/PaymentForm';
+import { OutstandingInvoicesTable } from '@/components/payment/OutstandingInvoicesTable';
+import { AmountReceivedInput } from '@/components/payment/AmountReceivedInput';
+import { PaymentSummary } from '@/components/payment/PaymentSummary';
 
 export default function PaymentFormPage() {
   const {
     payment,
-    updatePayment,
     updateCustomer,
-    outstandingInvoices,
-    selectedInvoices,
     toggleInvoiceSelection,
-    amountReceived,
-    setAmountReceived,
-    savePayment
+    savePayment,
+    invoices = [],
+    invoicesToPay = [],
+    amountReceived = 0,
+    updateAmountReceived
   } = usePaymentForm();
 
   return (
@@ -25,7 +24,6 @@ export default function PaymentFormPage() {
       
       <PaymentForm 
         payment={payment}
-        onUpdate={updatePayment}
         onCustomerChange={updateCustomer}
       />
       
@@ -34,20 +32,19 @@ export default function PaymentFormPage() {
           <h2 className="text-lg font-semibold mb-4">Outstanding Invoices</h2>
           
           <OutstandingInvoicesTable
-            invoices={outstandingInvoices}
-            selectedInvoices={selectedInvoices}
+            invoices={invoices}
             onToggleInvoice={toggleInvoiceSelection}
           />
           
           <div className="mt-6">
             <AmountReceivedInput
-              amountReceived={amountReceived}
-              onChange={setAmountReceived}
+              value={amountReceived}
+              onChange={updateAmountReceived}
             />
             
             <PaymentSummary
-              selectedInvoices={selectedInvoices}
-              amountReceived={amountReceived}
+              amountToApply={amountReceived}
+              amountToCredit={0}
             />
           </div>
         </div>
