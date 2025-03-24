@@ -11,13 +11,13 @@ import { SalesRepresentative } from '@/components/forms/SalesRepresentative';
 
 export default function SalesReceiptFormPage() {
   const { 
-    document: salesReceipt, 
-    updateDocument: updateSalesReceipt, 
+    salesReceipt, 
+    updateSalesReceipt, 
     updateCustomer, 
-    addDocumentItem: addSalesReceiptItem, 
-    updateDocumentItem: updateSalesReceiptItem, 
-    removeDocumentItem: removeSalesReceiptItem, 
-    saveDocument: saveSalesReceipt, 
+    addSalesReceiptItem, 
+    updateSalesReceiptItem, 
+    removeSalesReceiptItem, 
+    saveSalesReceipt, 
     clearAllItems,
     updateOtherFees
   } = useSalesReceiptForm();

@@ -12,14 +12,19 @@ export default function CreditNoteFormPage() {
     creditNote,
     updateCreditNote,
     updateCustomer,
-    addDocumentItem: addItem,
-    updateDocumentItem: updateItem,
-    removeDocumentItem: removeItem,
-    saveDocument: saveCreditNote,
-    transactions = [],
-    selectedTransaction = null,
-    setSelectedTransaction = () => {}
+    addCreditNoteItem,
+    updateCreditNoteItem,
+    removeCreditNoteItem,
+    saveCreditNote,
+    // Use mock data for now since transactions aren't in the hook
+    setItems,
+    clearAllItems
   } = useCreditNoteForm();
+
+  // Mock data for transactions
+  const transactions = [];
+  const selectedTransaction = null;
+  const setSelectedTransaction = () => {};
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -51,10 +56,10 @@ export default function CreditNoteFormPage() {
         creditNote={creditNote} 
         updateCreditNote={updateCreditNote}
         updateCustomer={updateCustomer}
-        addCreditNoteItem={addItem}
-        updateCreditNoteItem={updateItem}
-        removeCreditNoteItem={removeItem}
-        clearAllItems={() => {}}
+        addCreditNoteItem={addCreditNoteItem}
+        updateCreditNoteItem={updateCreditNoteItem}
+        removeCreditNoteItem={removeCreditNoteItem}
+        clearAllItems={clearAllItems}
         updateOtherFees={() => {}}
         onCustomerSelect={() => {}}
       />

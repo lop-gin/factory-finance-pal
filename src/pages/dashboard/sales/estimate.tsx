@@ -11,13 +11,13 @@ import { SalesRepresentative } from '@/components/forms/SalesRepresentative';
 
 export default function EstimateFormPage() {
   const { 
-    document: estimate, 
-    updateDocument: updateEstimate,
+    estimate, 
+    updateEstimate, 
     updateCustomer, 
-    addDocumentItem: addEstimateItem, 
-    updateDocumentItem: updateEstimateItem, 
-    removeDocumentItem: removeEstimateItem, 
-    saveDocument: saveEstimate, 
+    addEstimateItem, 
+    updateEstimateItem, 
+    removeEstimateItem, 
+    saveEstimate, 
     clearAllItems,
     updateOtherFees
   } = useEstimateForm();
@@ -62,7 +62,7 @@ export default function EstimateFormPage() {
         <div className="mt-4">
           <DocumentTotal 
             total={estimate.total}
-            balanceDue={estimate.total}
+            balanceDue={estimate.balanceDue}
             otherFeesAmount={estimate.otherFees?.amount}
             documentType="estimate"
           />

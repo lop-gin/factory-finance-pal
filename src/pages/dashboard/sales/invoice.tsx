@@ -14,10 +14,10 @@ export default function InvoiceFormPage() {
     invoice, 
     updateInvoice, 
     updateCustomer, 
-    addDocumentItem: addInvoiceItem, 
-    updateDocumentItem: updateInvoiceItem, 
-    removeDocumentItem: removeInvoiceItem, 
-    saveDocument: saveInvoice, 
+    addInvoiceItem, 
+    updateInvoiceItem, 
+    removeInvoiceItem, 
+    saveInvoice, 
     clearAllItems,
     updateOtherFees
   } = useInvoiceForm();

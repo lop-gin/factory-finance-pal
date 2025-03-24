@@ -1,52 +1,44 @@
 
 import React from "react";
+import { XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
-interface PaymentSummaryProps {
+export interface PaymentSummaryProps {
   amountToApply: number;
   amountToCredit: number;
   onClearPayment: () => void;
 }
 
-export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
-  amountToApply,
+export const PaymentSummary: React.FC<PaymentSummaryProps> = ({ 
+  amountToApply, 
   amountToCredit,
-  onClearPayment,
+  onClearPayment
 }) => {
   return (
-    <Card className="mt-4" style={{ maxWidth: '300px', marginLeft: 'auto' }}>
-      <CardContent className="p-4">
-        <div className="space-y-4">
-          <div className="flex flex-col space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="font-medium text-sm text-gray-700">Amount to Apply:</span>
-              <span className="font-bold">Ksh{amountToApply.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium text-sm text-gray-700">Amount to Credit:</span>
-              <span className="font-bold">Ksh{amountToCredit.toFixed(2)}</span>
-            </div>
-          </div>
-          
-          <Button 
-            onClick={onClearPayment} 
-            variant="outline" 
-            size="sm" 
-            className="w-full"
-          >
-            Clear Payment
-          </Button>
-          
-          {amountToCredit > 0 && (
-            <div className="mt-2 text-sm text-blue-600 bg-blue-50 p-3 rounded-md">
-              This transaction will create an additional credit in the amount of Ksh{amountToCredit.toFixed(2)}
-            </div>
-          )}
+    <div className="rounded-md border p-4">
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-sm font-medium">Payment Summary</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onClearPayment}
+          className="h-8 px-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+        >
+          <XCircle className="h-4 w-4 mr-1" />
+          <span className="text-xs">Clear</span>
+        </Button>
+      </div>
+      
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-gray-500">Amount to Apply:</span>
+          <span>Ksh{amountToApply.toFixed(2)}</span>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex justify-between">
+          <span className="text-gray-500">Amount to Credit:</span>
+          <span>Ksh{amountToCredit.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
   );
 };
-
-export default PaymentSummary;

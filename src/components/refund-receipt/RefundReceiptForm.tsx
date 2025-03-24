@@ -1,3 +1,4 @@
+
 import React from "react";
 import { CustomerSection } from "@/components/forms/CustomerSection";
 import { DateField } from "@/components/forms/DateFields";
@@ -5,6 +6,7 @@ import { SalesRepresentative } from "@/components/forms/SalesRepresentative";
 import { DocumentTotal } from "@/components/forms/DocumentTotal";
 import { Customer, DocumentItem, OtherFees, RefundReceiptType } from "@/types/document";
 import { PaymentSummary } from "@/components/payment/PaymentSummary";
+import { ItemsTable } from "@/components/forms/ItemsTable";
 
 interface RefundReceiptFormProps {
   refundReceipt: RefundReceiptType;
@@ -15,11 +17,12 @@ interface RefundReceiptFormProps {
   removeRefundReceiptItem: (itemId: string) => void;
   clearAllItems: () => void;
   updateOtherFees: (updates: Partial<OtherFees>) => void;
-  onCustomerSelect: (name: string) => void;
+  onCustomerSelect?: (name: string) => void;
   onClearRefund?: () => void;
+  onSave: () => void;
 }
 
-export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
+const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
   refundReceipt,
   updateRefundReceipt,
   updateCustomer,
@@ -29,7 +32,8 @@ export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
   clearAllItems,
   updateOtherFees,
   onCustomerSelect,
-  onClearRefund
+  onClearRefund,
+  onSave
 }) => {
   return (
     <div className="p-4">
@@ -79,6 +83,18 @@ export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
             </div>
           )}
         </div>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <ItemsTable 
+          items={refundReceipt.items}
+          addItem={addRefundReceiptItem}
+          updateItem={updateRefundReceiptItem}
+          removeItem={removeRefundReceiptItem}
+          clearAllItems={clearAllItems}
+          updateOtherFees={updateOtherFees}
+          otherFees={refundReceipt.otherFees || { description: "", amount: undefined }}
+        />
       </div>
     </div>
   );
