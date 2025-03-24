@@ -39,7 +39,7 @@ export const DateField: React.FC<DateFieldProps> = ({
             variant="outline"
             className={cn(
               "w-full justify-start text-left font-normal h-9 text-xs bg-white",
-              !date && "text-muted-foreground"
+              !date && "text-gray-500"
             )}
           >
             <CalendarIcon className="mr-2 h-3.5 w-3.5" />
