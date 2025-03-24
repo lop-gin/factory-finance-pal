@@ -14,7 +14,19 @@ import DashboardPage from "./pages/dashboard";
 // Admin pages
 import EmployeesPage from "./pages/dashboard/employees";
 import RolesPage from "./pages/dashboard/roles";
+import CreateRolePage from "./pages/dashboard/roles/create";
+import EditRolePage from "./pages/dashboard/roles/edit";
 import CustomersPage from "./pages/dashboard/customers";
+import InviteEmployeePage from "./pages/dashboard/employees/invite";
+import EditEmployeePage from "./pages/dashboard/employees/edit";
+
+// Form pages - replacing "coming soon" placeholders
+import InvoiceFormPage from "./pages/dashboard/sales/invoice";
+import SalesReceiptFormPage from "./pages/dashboard/sales/receipt";
+import CreditNoteFormPage from "./pages/dashboard/sales/credit-note";
+import PaymentFormPage from "./pages/dashboard/sales/payment";
+import EstimateFormPage from "./pages/dashboard/sales/estimate";
+import RefundReceiptFormPage from "./pages/dashboard/sales/refund-receipt";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -64,16 +76,20 @@ function App() {
         
         {/* Admin routes */}
         <Route path="employees" element={<EmployeesPage />} />
+        <Route path="employees/invite" element={<InviteEmployeePage />} />
+        <Route path="employees/edit/:id" element={<EditEmployeePage />} />
         <Route path="roles" element={<RolesPage />} />
+        <Route path="roles/create" element={<CreateRolePage />} />
+        <Route path="roles/edit/:id" element={<EditRolePage />} />
         <Route path="customers" element={<CustomersPage />} />
         
-        {/* Original routes - kept for compatibility */}
-        <Route path="sales/invoice" element={<div>Invoice Form - Coming Soon</div>} />
-        <Route path="sales/receipt" element={<div>Sales Receipt Form - Coming Soon</div>} />
-        <Route path="sales/credit-note" element={<div>Credit Note Form - Coming Soon</div>} />
-        <Route path="sales/payment" element={<div>Payment Form - Coming Soon</div>} />
-        <Route path="sales/estimate" element={<div>Estimate Form - Coming Soon</div>} />
-        <Route path="sales/refund-receipt" element={<div>Refund Receipt Form - Coming Soon</div>} />
+        {/* Sales/Document routes - replacing placeholders with actual form components */}
+        <Route path="sales/invoice" element={<InvoiceFormPage />} />
+        <Route path="sales/receipt" element={<SalesReceiptFormPage />} />
+        <Route path="sales/credit-note" element={<CreditNoteFormPage />} />
+        <Route path="sales/payment" element={<PaymentFormPage />} />
+        <Route path="sales/estimate" element={<EstimateFormPage />} />
+        <Route path="sales/refund-receipt" element={<RefundReceiptFormPage />} />
       </Route>
 
       {/* Catch-all redirect to 404 or home */}

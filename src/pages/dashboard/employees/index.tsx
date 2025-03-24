@@ -6,6 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserPlus, Edit, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Employee } from '@/types/roles';
 import { UserRoleBadge } from '@/components/ui/user-role-badge';
@@ -14,58 +24,113 @@ import { useAuth } from '@/components/auth/AuthProvider';
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
   const { toast } = useToast();
   const { user, userMetadata } = useAuth();
 
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      setLoading(true);
-      
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select(`
+  const fetchEmployees = async () => {
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          full_name,
+          role_id,
+          created_at,
+          updated_at,
+          status,
+          roles:role_id (
             id,
-            full_name,
-            role_id,
-            created_at,
-            updated_at,
-            status,
-            user:id(email)
-          `)
-          .order('created_at', { ascending: false });
+            name
+          ),
+          user:id(email)
+        `)
+        .order('created_at', { ascending: false });
 
-        if (error) {
-          throw error;
-        }
-
-        // Transform the data to match our Employee type
-        const formattedEmployees = data.map((profile: any) => ({
-          id: profile.id,
-          email: profile.user?.email || 'No email',
-          full_name: profile.full_name || 'No name',
-          profile_id: profile.id,
-          role_id: profile.role_id || '',
-          created_at: new Date(profile.created_at),
-          updated_at: new Date(profile.updated_at || profile.created_at),
-          status: profile.status || 'active'
-        }));
-
-        setEmployees(formattedEmployees);
-      } catch (error: any) {
-        console.error('Error fetching employees:', error);
-        toast({
-          title: "Error fetching employees",
-          description: error.message,
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
+      if (error) {
+        throw error;
       }
-    };
 
+      // Transform the data to match our Employee type
+      const formattedEmployees = data.map((profile: any) => ({
+        id: profile.id,
+        email: profile.user?.email || 'No email',
+        full_name: profile.full_name || 'No name',
+        profile_id: profile.id,
+        role_id: profile.role_id || '',
+        created_at: new Date(profile.created_at),
+        updated_at: new Date(profile.updated_at || profile.created_at),
+        status: profile.status || 'active',
+        role: profile.roles ? {
+          id: profile.roles.id,
+          name: profile.roles.name,
+          created_at: new Date(),
+          permissions: []
+        } : undefined
+      }));
+
+      setEmployees(formattedEmployees);
+    } catch (error: any) {
+      console.error('Error fetching employees:', error);
+      toast({
+        title: "Error fetching employees",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchEmployees();
   }, [toast]);
+
+  const handleDeleteClick = (employee: Employee) => {
+    setEmployeeToDelete(employee);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!employeeToDelete) return;
+    
+    try {
+      // Update profile status to 'disabled' rather than deleting
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          status: 'disabled',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', employeeToDelete.id);
+        
+      if (error) throw error;
+      
+      // Update the UI
+      setEmployees(employees.map(emp => 
+        emp.id === employeeToDelete.id 
+          ? { ...emp, status: 'disabled' } 
+          : emp
+      ));
+      
+      toast({
+        title: "Employee disabled",
+        description: `Employee "${employeeToDelete.full_name}" has been disabled`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error disabling employee",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setEmployeeToDelete(null);
+    }
+  };
 
   const isAdmin = userMetadata?.is_admin === true;
 
@@ -110,12 +175,12 @@ export default function EmployeesPage() {
               <TableBody>
                 {employees.length > 0 ? (
                   employees.map((employee) => (
-                    <TableRow key={employee.id}>
+                    <TableRow key={employee.id} className={employee.status === 'disabled' ? 'opacity-50' : ''}>
                       <TableCell className="font-medium">{employee.full_name}</TableCell>
                       <TableCell>{employee.email}</TableCell>
                       <TableCell>
-                        {employee.role_id ? (
-                          <UserRoleBadge role={employee.role_id.toLowerCase() as any} />
+                        {employee.role ? (
+                          <span className="text-sm">{employee.role.name}</span>
                         ) : (
                           <span className="text-gray-400">Not assigned</span>
                         )}
@@ -135,11 +200,17 @@ export default function EmployeesPage() {
                       {isAdmin && (
                         <TableCell className="text-right">
                           <Link to={`/dashboard/employees/edit/${employee.id}`}>
-                            <Button variant="ghost" size="sm">
+                            <Button variant="ghost" size="sm" disabled={employee.status === 'disabled'}>
                               <Edit className="h-4 w-4" />
                             </Button>
                           </Link>
-                          <Button variant="ghost" size="sm" className="text-red-500">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-500"
+                            onClick={() => handleDeleteClick(employee)}
+                            disabled={employee.status === 'disabled'}
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -158,6 +229,25 @@ export default function EmployeesPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete/Disable Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Disable this employee account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will disable the account for "{employeeToDelete?.full_name}". 
+              They will no longer be able to access the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              Disable
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
