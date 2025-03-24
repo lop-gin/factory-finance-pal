@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { X, ChevronDown, Save, CalendarIcon } from "lucide-react";
@@ -171,12 +172,13 @@ export const PaymentForm: React.FC = () => {
 
                 <div className="mb-6">
                   <OutstandingInvoicesTable
-                    invoices={payment.outstandingInvoices || []}
+                    invoices={payment.outstandingInvoices}
                     onToggleSelection={toggleInvoiceSelection}
                     onUpdatePayment={updateInvoicePayment}
                   />
                 </div>
                 
+                {/* Payment Summary positioned below the table and to the right */}
                 <div className="flex justify-end">
                   <div className="w-full md:w-1/3">
                     <PaymentSummary

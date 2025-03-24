@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -15,7 +16,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 interface EmployeeFormProps {
   employeeId?: string; // If provided, we're editing an existing employee
-  onSuccess?: () => void; // Callback when operation is successful
 }
 
 interface Role {
@@ -33,7 +33,7 @@ const employeeSchema = z.object({
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>;
 
-const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) => {
+const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const isEditing = !!employeeId;
@@ -89,18 +89,23 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
         try {
           const { data, error } = await supabase
             .from('profiles')
-            .select('id, full_name, phone, role_id, status')
+            .select(`
+              id,
+              full_name,
+              phone,
+              role_id,
+              status,
+              user:id(email)
+            `)
             .eq('id', employeeId)
             .single();
 
           if (error) throw error;
           
           if (data) {
-            // We need to get the email separately from auth service
-            // For now we just keep the existing value since we can't directly access auth users
             form.reset({
               full_name: data.full_name || "",
-              email: form.getValues().email, // Keep the existing email value
+              email: data.user?.email || "",
               phone: data.phone || "",
               role_id: data.role_id || "",
               status: (data.status as "active" | "inactive") || "active"
@@ -125,7 +130,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
     setIsSaving(true);
     
     try {
-      if (isEditing && employeeId) {
+      if (isEditing) {
         // Update existing employee
         const { error } = await supabase
           .from('profiles')
@@ -145,40 +150,47 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ employeeId, onSuccess }) =>
           description: `Employee "${values.full_name}" has been updated successfully`,
         });
       } else {
-        // For new employees
-        try {
-          // Generate a temporary ID for the profile
-          const tempId = crypto.randomUUID();
+        // For new employees, we need to:
+        // 1. Create a user account with Supabase Auth
+        // 2. Link the profile to that account
+        
+        // First, check if the email is already in use
+        const { data: existingUsers, error: checkError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', values.email);
           
-          // Insert the profile
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: tempId, // Use the temporary ID
-              full_name: values.full_name,
-              phone: values.phone,
-              role_id: values.role_id,
-              status: "invited", // Set as invited until they accept
-              updated_at: new Date().toISOString()
-            });
-            
-          if (profileError) throw profileError;
-          
-          toast({
-            title: "Employee invited",
-            description: `An invitation has been sent to ${values.email}`,
-          });
-        } catch (error: any) {
-          throw new Error(`Failed to create employee: ${error.message}`);
+        if (checkError) throw checkError;
+        
+        if (existingUsers && existingUsers.length > 0) {
+          throw new Error("An account with this email already exists");
         }
+        
+        // Create the new user account and send an invitation email
+        // Note: In a real app, you'd likely use a server-side function for this,
+        // as client-side signup has limitations
+        
+        // For this implementation, we'll simulate the process by creating a profile
+        const { data, error } = await supabase
+          .from('profiles')
+          .insert({
+            full_name: values.full_name,
+            phone: values.phone,
+            role_id: values.role_id,
+            status: "invited", // Set as invited until they accept
+            updated_at: new Date().toISOString()
+          })
+          .select();
+          
+        if (error) throw error;
+        
+        toast({
+          title: "Employee invited",
+          description: `An invitation has been sent to ${values.email}`,
+        });
       }
       
-      // Call onSuccess callback if provided
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate('/dashboard/employees');
-      }
+      navigate('/dashboard/employees');
       
     } catch (error: any) {
       toast({

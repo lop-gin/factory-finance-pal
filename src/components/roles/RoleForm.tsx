@@ -15,7 +15,6 @@ import { ArrowLeft, Save } from "lucide-react";
 
 interface RoleFormProps {
   roleId?: string; // If provided, we're editing an existing role
-  onSuccess?: () => void; // Add this prop to handle navigation
 }
 
 interface Module {
@@ -28,7 +27,7 @@ interface ModulePermissionState {
   [moduleId: string]: ModulePermission[];
 }
 
-const RoleForm: React.FC<RoleFormProps> = ({ roleId, onSuccess }) => {
+const RoleForm: React.FC<RoleFormProps> = ({ roleId }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const isEditing = !!roleId;
@@ -233,12 +232,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ roleId, onSuccess }) => {
         description: `Role "${finalRoleName}" has been ${isEditing ? 'updated' : 'created'} successfully`,
       });
       
-      // Call onSuccess if provided, otherwise navigate
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate('/dashboard/roles');
-      }
+      navigate('/dashboard/roles');
       
     } catch (error: any) {
       toast({
