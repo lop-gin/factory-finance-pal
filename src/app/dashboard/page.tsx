@@ -1,6 +1,8 @@
 
+"use client";
+
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function DashboardPage() {
@@ -9,7 +11,7 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold mb-6">Sales Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Link to="/dashboard/sales/invoice">
+        <Link href="/dashboard/sales/invoice">
           <motion.div 
             className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-blue-500 transition-all"
             whileHover={{ scale: 1.02 }}
@@ -22,7 +24,7 @@ export default function DashboardPage() {
           </motion.div>
         </Link>
         
-        <Link to="/dashboard/sales/receipt">
+        <Link href="/dashboard/sales/receipt">
           <motion.div 
             className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-green-500 transition-all"
             whileHover={{ scale: 1.02 }}
@@ -35,7 +37,7 @@ export default function DashboardPage() {
           </motion.div>
         </Link>
         
-        <Link to="/dashboard/sales/credit-note">
+        <Link href="/dashboard/sales/credit-note">
           <motion.div 
             className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-red-500 transition-all"
             whileHover={{ scale: 1.02 }}
@@ -48,7 +50,7 @@ export default function DashboardPage() {
           </motion.div>
         </Link>
         
-        <Link to="/dashboard/sales/payment">
+        <Link href="/dashboard/sales/payment">
           <motion.div 
             className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-purple-500 transition-all"
             whileHover={{ scale: 1.02 }}
@@ -61,7 +63,7 @@ export default function DashboardPage() {
           </motion.div>
         </Link>
 
-        <Link to="/dashboard/sales/estimate">
+        <Link href="/dashboard/sales/estimate">
           <motion.div 
             className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-yellow-500 transition-all"
             whileHover={{ scale: 1.02 }}
@@ -74,7 +76,7 @@ export default function DashboardPage() {
           </motion.div>
         </Link>
         
-        <Link to="/dashboard/sales/refund-receipt">
+        <Link href="/dashboard/sales/refund-receipt">
           <motion.div 
             className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-orange-500 transition-all"
             whileHover={{ scale: 1.02 }}

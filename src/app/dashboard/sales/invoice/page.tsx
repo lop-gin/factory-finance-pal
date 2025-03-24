@@ -1,6 +1,8 @@
 
+"use client";
+
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { X, ChevronDown, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomerSection } from "@/components/forms/CustomerSection";
@@ -54,7 +56,7 @@ export default function InvoicePage() {
         <div className="bg-transparent pb-20">
           <div className="bg-white shadow-sm border-b border-gray-200 p-4 flex justify-between items-center">
             <h1 className="text-xl font-semibold">Invoice</h1>
-            <Link to="/dashboard">
+            <Link href="/dashboard">
               <Button variant="ghost" size="icon">
                 <X className="h-5 w-5" />
               </Button>
@@ -134,7 +136,7 @@ export default function InvoicePage() {
           
           <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4 flex justify-between items-center">
             <div className="flex space-x-3">
-              <Link to="/dashboard">
+              <Link href="/dashboard">
                 <Button variant="outline" className="bg-transparent text-white border-gray-600 hover:bg-gray-700 hover:text-white">
                   Cancel
                 </Button>

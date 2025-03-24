@@ -1,5 +1,7 @@
 
-import React, { useState } from 'react';
+"use client";
+
+import React from 'react';
 import RefundReceiptHeader from "@/components/refund-receipt/RefundReceiptHeader";
 import RefundReceiptForm from "@/components/refund-receipt/RefundReceiptForm";
 import { FormActions } from "@/components/forms/FormActions";
