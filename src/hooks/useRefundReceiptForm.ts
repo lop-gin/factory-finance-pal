@@ -1,24 +1,9 @@
 
-import { useState, useCallback, useEffect } from "react";
-import { RefundReceiptType } from "@/types/document";
+import { useState, useCallback } from "react";
+import { Document, DocumentItem, Customer, OtherFees, RefundReceiptType } from "@/types/document";
 import { generateRefundReceiptNumber } from "@/lib/document-utils";
-import { saveRefundReceipt as saveRefundReceiptToDb } from "@/services/refundReceiptService";
+import { saveRefundReceipt } from "@/services/refundReceiptService";
 import { toast } from "sonner";
-
-// Import refactored utility functions
-import { validateRefundReceipt, processItems } from "./refund-receipt/refundReceiptUtils";
-import {
-  updateRefundReceipt as updateRefundReceiptState,
-  updateCustomer as updateCustomerState,
-  updateReferencedTransactions as updateReferencedTransactionsState,
-  addRefundReceiptItem as addRefundReceiptItemState,
-  updateRefundReceiptItem as updateRefundReceiptItemState,
-  removeRefundReceiptItem as removeRefundReceiptItemState,
-  clearAllItems as clearAllItemsState,
-  updateOtherFees as updateOtherFeesState,
-  recalculateTotals,
-  addItems as addItemsState
-} from "./refund-receipt/refundReceiptStateHandlers";
 
 export const useRefundReceiptForm = () => {
   const initialState: RefundReceiptType = {
@@ -47,69 +32,145 @@ export const useRefundReceiptForm = () => {
 
   const [refundReceipt, setRefundReceipt] = useState<RefundReceiptType>(initialState);
 
-  // Recalculate totals whenever items or fees change
-  useEffect(() => {
-    recalculateTotals(setRefundReceipt, refundReceipt);
+  const calculateTotals = useCallback(() => {
+    const itemsTotal = refundReceipt.items.reduce(
+      (sum, item) => sum + (item.amount || 0),
+      0
+    );
+
+    const otherFeesAmount = refundReceipt.otherFees?.amount || 0;
+    const total = itemsTotal + otherFeesAmount;
+
+    setRefundReceipt((prev) => ({
+      ...prev,
+      subTotal: itemsTotal,
+      total,
+      balanceDue: total
+    }));
   }, [refundReceipt.items, refundReceipt.otherFees?.amount]);
 
-  // Wrapped state handlers with useCallback
   const updateRefundReceipt = useCallback(
     (updates: Partial<RefundReceiptType>) => {
-      updateRefundReceiptState(setRefundReceipt, updates);
+      setRefundReceipt((prev) => ({
+        ...prev,
+        ...updates
+      }));
     },
     []
   );
 
-  const updateCustomer = useCallback((customer: any) => {
-    updateCustomerState(setRefundReceipt, customer);
+  const updateCustomer = useCallback((customer: Customer) => {
+    setRefundReceipt((prev) => ({
+      ...prev,
+      customer
+    }));
   }, []);
 
   const updateReferencedTransactions = useCallback((transactionIds: string[]) => {
-    updateReferencedTransactionsState(setRefundReceipt, transactionIds);
+    setRefundReceipt((prev) => ({
+      ...prev,
+      referencedTransactions: transactionIds
+    }));
   }, []);
 
   const addRefundReceiptItem = useCallback(() => {
-    addRefundReceiptItemState(setRefundReceipt);
+    const newItem: DocumentItem = {
+      id: `item-${Date.now()}`,
+      product: "",
+      description: "",
+      amount: 0,
+      quantity: 1,
+      unitPrice: 0,
+      taxPercent: 0,
+      serviceDate: "",
+      category: "",
+      unit: ""
+    };
+
+    setRefundReceipt((prev) => ({
+      ...prev,
+      items: [...prev.items, newItem]
+    }));
   }, []);
 
-  const addItems = useCallback((items: any[]) => {
-    const processedItems = processItems(items);
-    addItemsState(setRefundReceipt, processedItems);
-  }, []);
+  const addItems = useCallback((items: DocumentItem[]) => {
+    setRefundReceipt((prev) => ({
+      ...prev,
+      items: [...prev.items, ...items]
+    }));
+    
+    // Calculate totals after adding items
+    setTimeout(() => calculateTotals(), 0);
+  }, [calculateTotals]);
 
   const updateRefundReceiptItem = useCallback(
-    (itemId: string, updates: any) => {
-      updateRefundReceiptItemState(setRefundReceipt, itemId, updates);
+    (itemId: string, updates: Partial<DocumentItem>) => {
+      setRefundReceipt((prev) => ({
+        ...prev,
+        items: prev.items.map((item) =>
+          item.id === itemId ? { ...item, ...updates } : item
+        )
+      }));
+      
+      // Calculate totals after updating item
+      setTimeout(() => calculateTotals(), 0);
     },
-    []
+    [calculateTotals]
   );
 
   const removeRefundReceiptItem = useCallback(
     (itemId: string) => {
-      removeRefundReceiptItemState(setRefundReceipt, itemId);
+      setRefundReceipt((prev) => ({
+        ...prev,
+        items: prev.items.filter((item) => item.id !== itemId)
+      }));
+      
+      // Calculate totals after removing item
+      setTimeout(() => calculateTotals(), 0);
     },
-    []
+    [calculateTotals]
   );
 
   const clearAllItems = useCallback(() => {
-    clearAllItemsState(setRefundReceipt);
-  }, []);
+    setRefundReceipt((prev) => ({
+      ...prev,
+      items: []
+    }));
+    
+    // Calculate totals after clearing items
+    setTimeout(() => calculateTotals(), 0);
+  }, [calculateTotals]);
 
   const updateOtherFees = useCallback(
-    (updates: any) => {
-      updateOtherFeesState(setRefundReceipt, updates);
+    (updates: Partial<OtherFees>) => {
+      setRefundReceipt((prev) => ({
+        ...prev,
+        otherFees: {
+          ...(prev.otherFees || { description: "" }),
+          ...updates
+        }
+      }));
+      
+      // Calculate totals after updating fees
+      setTimeout(() => calculateTotals(), 0);
     },
-    []
+    [calculateTotals]
   );
 
   const saveRefundReceiptToDatabase = useCallback(async () => {
     try {
-      if (!validateRefundReceipt(refundReceipt)) {
-        return false;
+      if (!refundReceipt.customer.name) {
+        toast.error("Please enter customer information");
+        return;
+      }
+      
+      if (refundReceipt.items.length === 0) {
+        toast.error("Please add at least one item");
+        return;
       }
       
       // Save the refund receipt to the database
-      await saveRefundReceiptToDb(refundReceipt);
+      await saveRefundReceipt(refundReceipt);
       
       // Generate a new refund receipt number for the next refund receipt
       setRefundReceipt((prev) => ({

@@ -1,9 +1,11 @@
+
 import React from "react";
 import { CustomerSection } from "@/components/forms/CustomerSection";
 import { DateField } from "@/components/forms/DateFields";
 import { SalesRepresentative } from "@/components/forms/SalesRepresentative";
 import { DocumentTotal } from "@/components/forms/DocumentTotal";
-import { Customer, DocumentItem, OtherFees, RefundReceiptType } from "@/types/document";
+import { Customer, DocumentItem, OtherFees } from "@/types/document";
+import { RefundReceiptType } from "@/hooks/useRefundReceiptForm";
 import { PaymentSummary } from "@/components/payment/PaymentSummary";
 
 interface RefundReceiptFormProps {

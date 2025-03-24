@@ -211,27 +211,6 @@ export type Database = {
           },
         ]
       }
-      modules: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
       other_fees: {
         Row: {
           amount: number
@@ -267,56 +246,6 @@ export type Database = {
           },
         ]
       }
-      profiles: {
-        Row: {
-          address: string | null
-          company_name: string | null
-          company_type: string | null
-          created_at: string | null
-          full_name: string | null
-          id: string
-          is_admin: boolean | null
-          phone: string | null
-          role_id: string | null
-          status: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          address?: string | null
-          company_name?: string | null
-          company_type?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          id: string
-          is_admin?: boolean | null
-          phone?: string | null
-          role_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          address?: string | null
-          company_name?: string | null
-          company_type?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          id?: string
-          is_admin?: boolean | null
-          phone?: string | null
-          role_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "roles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       refund_receipts: {
         Row: {
           id: string
@@ -342,69 +271,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      role_permissions: {
-        Row: {
-          created_at: string | null
-          id: string
-          module_id: string
-          permissions: string[]
-          role_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          module_id: string
-          permissions?: string[]
-          role_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          module_id?: string
-          permissions?: string[]
-          role_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "role_permissions_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "modules"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "role_permissions_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "roles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      roles: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
       }
     }
     Views: {
