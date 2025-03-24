@@ -11,23 +11,6 @@ import LandingPage from "./pages/landing";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardPage from "./pages/dashboard";
 
-// Admin pages
-import EmployeesPage from "./pages/dashboard/employees";
-import RolesPage from "./pages/dashboard/roles";
-import CreateRolePage from "./pages/dashboard/roles/create";
-import EditRolePage from "./pages/dashboard/roles/edit";
-import CustomersPage from "./pages/dashboard/customers";
-import InviteEmployeePage from "./pages/dashboard/employees/invite";
-import EditEmployeePage from "./pages/dashboard/employees/edit";
-
-// Form pages - replacing "coming soon" placeholders
-import InvoiceFormPage from "./pages/dashboard/sales/invoice";
-import SalesReceiptFormPage from "./pages/dashboard/sales/receipt";
-import CreditNoteFormPage from "./pages/dashboard/sales/credit-note";
-import PaymentFormPage from "./pages/dashboard/sales/payment";
-import EstimateFormPage from "./pages/dashboard/sales/estimate";
-import RefundReceiptFormPage from "./pages/dashboard/sales/refund-receipt";
-
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -73,23 +56,7 @@ function App() {
         </ProtectedRoute>
       }>
         <Route index element={<DashboardPage />} />
-        
-        {/* Admin routes */}
-        <Route path="employees" element={<EmployeesPage />} />
-        <Route path="employees/invite" element={<InviteEmployeePage />} />
-        <Route path="employees/edit/:id" element={<EditEmployeePage />} />
-        <Route path="roles" element={<RolesPage />} />
-        <Route path="roles/create" element={<CreateRolePage />} />
-        <Route path="roles/edit/:id" element={<EditRolePage />} />
-        <Route path="customers" element={<CustomersPage />} />
-        
-        {/* Sales/Document routes - replacing placeholders with actual form components */}
-        <Route path="sales/invoice" element={<InvoiceFormPage />} />
-        <Route path="sales/receipt" element={<SalesReceiptFormPage />} />
-        <Route path="sales/credit-note" element={<CreditNoteFormPage />} />
-        <Route path="sales/payment" element={<PaymentFormPage />} />
-        <Route path="sales/estimate" element={<EstimateFormPage />} />
-        <Route path="sales/refund-receipt" element={<RefundReceiptFormPage />} />
+        {/* Add more dashboard routes here */}
       </Route>
 
       {/* Catch-all redirect to 404 or home */}
