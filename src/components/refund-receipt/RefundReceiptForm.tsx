@@ -21,7 +21,7 @@ interface RefundReceiptFormProps {
   onClearRefund?: () => void;
 }
 
-export const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
+const RefundReceiptForm: React.FC<RefundReceiptFormProps> = ({
   refundReceipt,
   updateRefundReceipt,
   updateCustomer,

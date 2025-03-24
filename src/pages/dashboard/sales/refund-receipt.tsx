@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import RefundReceiptHeader from "@/components/refund-receipt/RefundReceiptHeader";
+import { RefundReceiptHeader } from "@/components/refund-receipt/RefundReceiptHeader";
 import RefundReceiptForm from "@/components/refund-receipt/RefundReceiptForm";
 import { FormActions } from "@/components/forms/FormActions";
 import useRefundReceiptForm from "@/hooks/useRefundReceiptForm";
@@ -19,11 +19,14 @@ export default function RefundReceiptPage() {
     addItems,
     updateReferencedTransactions
   } = useRefundReceiptForm();
+  
+  // Mock referenced payments
+  const [referencedPayments, setReferencedPayments] = useState([]);
+  const [selectedReferencedPayment, setSelectedReferencedPayment] = useState(null);
 
   // Function for selecting a customer
-  const handleCustomerSelect = (customerName: string) => {
-    console.log("Selected customer:", customerName);
-    // This would typically fetch customer data and update the form
+  const handleCustomerSelect = () => {
+    console.log("Customer selected");
   };
 
   return (
@@ -41,6 +44,7 @@ export default function RefundReceiptPage() {
           clearAllItems={clearAllItems}
           updateOtherFees={updateOtherFees}
           onCustomerSelect={handleCustomerSelect}
+          onClearRefund={() => clearAllItems()}
         />
       </div>
       
